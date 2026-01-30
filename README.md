@@ -8,6 +8,7 @@ mkdir build
 cd build
 cmake ..
 cmake --build .
+cpp20+
 
 ## Run
 
