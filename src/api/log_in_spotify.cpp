@@ -13,7 +13,7 @@ void log_in_un_authenticated(){
 
     cout << "First of all, You need to log in to Your Spotify Account and create an app\n\n";
 
-    ShellExecute(0, 0, dev_uri.c_str(), 0, 0 , SW_SHOW );
+    // ShellExecute(0, 0, dev_uri.c_str(), 0, 0 , SW_SHOW );
     
     cout << "Log in with your Spotify Account and accept the Terms of Service\n\n";
 

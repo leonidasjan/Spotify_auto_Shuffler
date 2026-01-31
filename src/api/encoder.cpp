@@ -5,6 +5,7 @@
 using std::string;
 using std::map;
 using std::unordered_map;
+#include <iostream>
 
 string encoder( string input ){
 
@@ -69,6 +70,21 @@ string encode_hashmap_ordered( string base_url ,map<string, string> map ) {
 
     };
 
+    //Cleanup
     //  this erase removes & at the start
-    return base_url+result.erase(1,1);
+    result.erase(1,1);
+    // Remove any null terminate char
+    int temp = 0;
+        for (unsigned char c : result){
+
+            if ((int)c == 0) {
+                if ( result.size() > temp ) { 
+                    result.erase(temp,1);
+                };
+            };
+            temp++;
+        };
+
+
+    return base_url+result;
 };

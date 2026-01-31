@@ -23,14 +23,27 @@ void authenticate_spotify(string ClientID, string ClientSecret, string Redirect_
         };
 
         string auth_link = encode_hashmap_ordered("https://accounts.spotify.com/authorize",m);
-        std::cout << "Before Conv: "<< auth_link << '\n';
-        std::cout << "After Conv: "<<auth_link.data() << "\n";
-        auto auth_link_c = auth_link.data();
-        for (int t=0; t <auth_link.size(); t++)
-        {
-            std::cout<<auth_link_c[t];
+        // std::cout << "Before Conv: "<< auth_link << '\n';
+        // auto auth_link_c = auth_link.data();
+        // std::cout << "After Conv: "<<auth_link_c << "\n";
+        // for (int t=0; t <auth_link.size(); t++)
+        // {
+        //     std::cout<<auth_link_c[t];
+        // };
+        std::cout << "size: " << auth_link.size() << "\n";
+        for (unsigned char c : auth_link){
+            std::cout <<  c << (int)c << " ";
         };
-        // ShellExecute(0, 0, auth_link.data(), 0, 0 , SW_SHOW );
+        std::cout << '\n';
+        // ShellExecute(0, 0, auth_link_c, 0, 0 , SW_SHOW );
+        // system(auth_link_c);
+
+
+        // string test = "https://accounts.spotify.com/authorize?response_type=code&client_id=71258ec77b394b6fa8fac14ebc16c7dc&scope=user-library-read%20user-library-modify&redirect_uri=http%3A%2F%2F127.0.0.1%3A54789%2Fcallback";
+        // std::cout << test << '\n';
+        // std::cout << test.data() << '\n';
+
+
     }
     // Open the browser
     // ShellExecute(0, 0, auth_link.c_str(), 0, 0 , SW_SHOW );
