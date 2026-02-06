@@ -23,7 +23,7 @@ string encoder( string input ){
         reserved['}'] = "%7D";
         
 
-    for( int t = 0 ; t <= input.length() ; t++) {
+    for( size_t t = 0 ; t <= input.length() ; t++) {
         int found = 0;
         for ( auto ch : reserved ) {
             if ( input[t] == ch.first ) {
