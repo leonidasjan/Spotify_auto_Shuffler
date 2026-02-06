@@ -10,18 +10,18 @@ void serverHTMLSetup(std::string state){
   Server svr;
    svr.Get("/callback", [](const Request& req, Response& res) {
         res.set_content("Approved","text/plain");
-        std::string code,state;
+        std::string req_code, req_state;
         if(req.has_param("code")){
-          code = req.get_param_value("code");
+          req_code = req.get_param_value("code");
           std::cout << code;
         };
         if(req.has_param("state")){
-          state = req.get_param_value("state");
+          req_state = req.get_param_value("state");
         };
         if (code == ""){
           res.set_content("Something went wrong","text/plain");
-        } else {
-
+        } else if(req_state != state) {
+          res.set_content("State mismatch","text/plain");
         }
     });
   std::cout << " \n [HTTPserver] Starting on http://127.0.0.1:54789 \n";
