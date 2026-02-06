@@ -1,9 +1,10 @@
 #include "yhirose/httplib.h"
-#include <thread>
-#include <map>
+
 #include <string>
 #include <iostream>
-void serverHTMLSetup(){
+#include <thread>
+
+void serverHTMLSetup(std::string state){
   using namespace httplib;
   // HTTP
   Server svr;
@@ -17,7 +18,11 @@ void serverHTMLSetup(){
         if(req.has_param("state")){
           state = req.get_param_value("state");
         };
-        std::cout << "\n" << res.status << "\n";
+        if (code == ""){
+          res.set_content("Something went wrong","text/plain");
+        } else {
+
+        }
     });
   std::cout << " \n [HTTPserver] Starting on http://127.0.0.1:54789 \n";
   svr.listen("127.0.0.1", 54789);

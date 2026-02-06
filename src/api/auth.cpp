@@ -1,14 +1,17 @@
-#include <iostream>
-#include <string>
 #include "log_in_spotify.hpp"
 #include "encoder.hpp"
 #include "httpserver.hpp"
-#include <windows.h>
-#include <shellapi.h>
+#include "rand_str.hpp"
+
+#include <iostream>
+#include <string>
 #include <format>
 #include <map>
 #include <thread>
 #include <chrono>
+
+#include <windows.h>
+#include <shellapi.h>
 using std::string;
 void authenticate_spotify(string ClientID, string ClientSecret, string Redirect_URI){
     const string scope = "user-library-read user-library-modify";
@@ -17,7 +20,9 @@ void authenticate_spotify(string ClientID, string ClientSecret, string Redirect_
         log_in_un_authenticated();
         std::cout << "Please try again \n";
     } else {
-        std::thread serverThread(serverHTMLSetup);
+        string state = randomStrGen(16);
+        std::cout << "\nState:" << state << "\n";
+        std::thread serverThread(serverHTMLSetup,state);
         if (serverThread.joinable()){
             serverThread.detach();
         };
@@ -26,16 +31,18 @@ void authenticate_spotify(string ClientID, string ClientSecret, string Redirect_
          {{"1response_type","code"},
          {"2client_id",ClientID},
          {"3scope",scope},
-         {"4redirect_uri",Redirect_URI}
+         {"4redirect_uri",Redirect_URI},
+         {"5state",state}
         };
 
         string auth_link = encode_hashmap_ordered("https://accounts.spotify.com/authorize",m);
        
         // Open the browser
         ShellExecute(0, 0, auth_link.c_str(), 0, 0 , SW_SHOW );
-        std::this_thread::sleep_for(std::chrono::seconds(10));
-        
-
+        for (int i = 0; i < 5; ++i) {
+        std::cout << "\n[Main] Doing other work... " << i << "\n";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
 
     }
 
