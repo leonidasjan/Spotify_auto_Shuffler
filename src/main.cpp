@@ -11,8 +11,8 @@
 
 
 int main(){
-    using std::cout; cout << "Welcome to Spotify Auto Shuffler. \n";
-    std::string state = randomStrGen(16);
+    using std::cout, std::string, std::thread; cout << "Welcome to Spotify Auto Shuffler. \n";
+    string state = randomStrGen(16);
     std::thread serverThread(serverHTMLSetup,state);
     if (serverThread.joinable()){
         serverThread.detach();
