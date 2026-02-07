@@ -2,12 +2,11 @@
 #include <string>
 #include <windows.h>
 #include "auth.hpp"
-void log_in_un_authenticated(){
+void log_in_un_authenticated(std::string state){
     using std::cout , std::cin, std::string;
 
     string ClientID = "None";
     string ClientSecret = "None";
-    const string Redirect_URI = "http://127.0.0.1:54789/callback";
     const string dev_uri = "https://developer.spotify.com/dashboard";
 
 
@@ -23,7 +22,7 @@ void log_in_un_authenticated(){
 
     cout << "Fill App name and App description however You want \n\n";
 
-    cout << "In redirect URI, copy and paste this: " << Redirect_URI << "\n\n";
+    cout << "In redirect URI, copy and paste this: http://127.0.0.1:54789/callback" << "\n\n";
 
     cout << "Click Save\n";
     cout << "====================================\n";
@@ -40,7 +39,7 @@ void log_in_un_authenticated(){
         cin >> ClientSecret;
 
         cout << "\n\n Done! Now Authenticate in your browser.\n\n";
-        authenticate_spotify( ClientID, ClientSecret, Redirect_URI );
+        authenticate_spotify( ClientID, ClientSecret, state );
     }
 
 }

@@ -1,4 +1,4 @@
-#include "log_in_spotify.hpp"
+#include "log_in_un_authenticated.hpp"
 #include "encoder.hpp"
 #include "httpserver.hpp"
 #include "rand_str.hpp"
@@ -13,19 +13,14 @@
 #include <windows.h>
 #include <shellapi.h>
 using std::string;
-void authenticate_spotify(string ClientID, string ClientSecret, string Redirect_URI){
+void authenticate_spotify(string ClientID, string ClientSecret, string state){
     const string scope = "user-library-read user-library-modify";
-    if (ClientID == "None" || ClientSecret == "None" || Redirect_URI == "")
+    const string Redirect_URI = "http://127.0.0.1:54789/callback";
+    if (ClientID == "None" || ClientSecret == "None" || state == "")
     {
-        log_in_un_authenticated();
+        log_in_un_authenticated(state);
         std::cout << "Please try again \n";
     } else {
-        string state = randomStrGen(16);
-        std::cout << "\nState:" << state << "\n";
-        std::thread serverThread(serverHTMLSetup,state);
-        if (serverThread.joinable()){
-            serverThread.detach();
-        };
         std::cout << "Opening up browser...\n"; 
         std::map<string,string> m =
          {{"1response_type","code"},
@@ -39,10 +34,6 @@ void authenticate_spotify(string ClientID, string ClientSecret, string Redirect_
        
         // Open the browser
         ShellExecute(0, 0, auth_link.c_str(), 0, 0 , SW_SHOW );
-        for (int i = 0; i < 5; ++i) {
-        std::cout << "\n[Main] Doing other work... " << i << "\n";
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
 
     }
 
