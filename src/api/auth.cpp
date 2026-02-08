@@ -34,7 +34,8 @@ void authenticate_spotify(string ClientID, string ClientSecret, string state){
        
         // Open the browser
         ShellExecute(0, 0, auth_link.c_str(), 0, 0 , SW_SHOW );
-
+         Client cli("https://accounts.spotify.com/api/token");
+         cli.Post("https://accounts.spotify.com/api/token",)
     }
 
 

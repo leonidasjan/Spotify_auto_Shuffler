@@ -1,5 +1,7 @@
 #include "yhirose/httplib.h"
+#include "nlohmann/json.hpp"
 #include "encoder.hpp"
+#include "tobiaslocker/base64.hpp" 
 
 #include <string>
 #include <iostream>
@@ -17,6 +19,8 @@ void serverHTMLSetup(std::string state){
 
     if(req.has_param("code")){
       req_code = req.get_param_value("code");
+      if      (req_code == "")     { res.set_content("Something went wrong","text/plain");}
+      else if (req_state != state) { res.set_content("State mismatch","text/plain");}
     };
     if(req.has_param("state")){
       req_state = req.get_param_value("state");
@@ -27,22 +31,10 @@ void serverHTMLSetup(std::string state){
     } else {
       res.set_content("Approved","text/plain");
     }
+  });
 
-    if      (req_code == "")     { res.set_content("Something went wrong","text/plain");}
-    else if (req_state != state) { res.set_content("State mismatch","text/plain");}
-
-    else {
-      // TODO: request access token and figure out how this server can run in the background independenly
-      // Client cli;
-
-      // encode_hashmap_ordered("");
-      // cli.send()
-
-    };
-
-
-    });
   std::cout << " \n [HTTPserver] Starting on http://127.0.0.1:54789 \n";
+  std::cout << "\n[HTTPserver] Started\n"
   svr.listen("127.0.0.1", 54789);
   std::cout << "\n [HTTPserver] Stopped. \n";
 }
