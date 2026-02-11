@@ -13,7 +13,7 @@
 #include <windows.h>
 #include <shellapi.h>
 using std::string;
-void authenticate_spotify(string ClientID, string ClientSecret, string state){
+void get_auth_code(string ClientID, string ClientSecret, string state){
     const string scope = "user-library-read user-library-modify";
     const string Redirect_URI = "http://127.0.0.1:54789/callback";
     if (ClientID == "None" || ClientSecret == "None" || state == "")
@@ -38,6 +38,9 @@ void authenticate_spotify(string ClientID, string ClientSecret, string state){
         //  cli.Post("https://accounts.spotify.com/api/token",)
         
     }
+void get_access_token(std::string){
+    
+}
 
 
     

@@ -73,10 +73,10 @@ void make_json_file(std::string name,std::filesystem::path path){
     path /= name+".json";
     std::ofstream ofs(path);
     ofs.close();
-    if (std::filesystem::exists(path)){
+    if (std::filesystem::exists(path,std::string e)){
         std::cout << "File Created: " << path;
     } else {
-        std::cout << "File " <<path << " did not create!!";
+        std::cout << "File " << path << " did not create!! Error: " << e;
     }
 }
 

@@ -3,13 +3,14 @@
 #include "encoder.hpp"
 #include "tobiaslocker/base64.hpp" 
 #include "auth.hpp"
+#include "nlohmann/json.hpp"
 
 #include <string>
 #include <iostream>
 #include <thread>
 #include <map>
 
-void serverHTMLSetup(std::string state){
+void serverHTML(std::string state){
   using namespace httplib;
   // HTTP
   Server svr;
@@ -34,9 +35,7 @@ void serverHTMLSetup(std::string state){
       res.set_content(req_error,"text/plain");
     } else {
       res.set_content("Approved","text/plain");
-    }
-    string get_auth_code(){
-      return req_code;
+      get_access_token(req_code);
     }
 
 
