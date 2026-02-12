@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <thread>
+#include <nlohmann/json.hpp>
 #include "get_vector.hpp"
 #include "shuffle_alg.hpp"
 #include "check_config.hpp"
@@ -10,7 +11,8 @@
 
 
 int main(){
-    using std::cout, std::string, std::thread; cout << "Welcome to Spotify Auto Shuffler. \n";
+    using std::cout, std::string, std::thread;
+    cout << "Welcome to Spotify Auto Shuffler. \n";
     string state = randomStrGen(16);
     std::thread serverThread(serverHTML,state);
     check_config_folders();

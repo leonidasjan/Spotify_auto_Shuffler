@@ -2,6 +2,8 @@
 #include <string>
 #include <windows.h>
 #include "auth.hpp"
+#include "check_config.hpp"
+
 void log_in_un_authenticated(std::string state){
     using std::cout , std::cin, std::string;
 
@@ -39,7 +41,7 @@ void log_in_un_authenticated(std::string state){
         cin >> ClientSecret;
 
         cout << "\n\n Done! Now Authenticate in your browser.\n\n";
-        authenticate_spotify( ClientID, ClientSecret, state );
+        get_auth_code( ClientID, ClientSecret, state );
     }
 
 }

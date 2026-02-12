@@ -1,3 +1,4 @@
+
 #include "log_in_un_authenticated.hpp"
 #include "encoder.hpp"
 #include "httpserver.hpp"
@@ -38,9 +39,9 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         //  cli.Post("https://accounts.spotify.com/api/token",)
         
     }
-void get_access_token(std::string){
+// void get_access_token(std::string){
     
-}
+// }
 
 
     

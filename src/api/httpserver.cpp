@@ -1,9 +1,7 @@
 #include "yhirose/httplib.h"
-#include "nlohmann/json.hpp"
 #include "encoder.hpp"
 #include "tobiaslocker/base64.hpp" 
 #include "auth.hpp"
-#include "nlohmann/json.hpp"
 
 #include <string>
 #include <iostream>
@@ -35,7 +33,7 @@ void serverHTML(std::string state){
       res.set_content(req_error,"text/plain");
     } else {
       res.set_content("Approved","text/plain");
-      get_access_token(req_code);
+      // get_access_token(req_code);
     }
 
 

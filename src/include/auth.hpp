@@ -7,5 +7,5 @@ void get_auth_code(
      string ClientSecret="None",
      string state=""
     );
-void get_access_token(std::string);
+// void get_access_token(std::string);
 #endif
