@@ -23,12 +23,10 @@ int main(){
     nlohmann::json j = read_config();
     m.unlock();
     //  || j["ClientID"] != ""  || j["RefreshToken"] != "" 
-    if (j["ClientID"] == "null" || j["ClientSecret"] == "null" || !j.is_string()) {
+    if (j["ClientID"] == "" || j["ClientSecret"] == "null" || j.is_string()) {
        log_in_un_authenticated(state); 
     } else {
-        std::cout << "authenticated, getting access token \n";
-        std::cout << "\nClientID: "<< j["ClientID"];
-        std::cout << "\nClientSecret: "<< j["ClientSecret"];
+        // std::cout << "authenticated, getting access token \n";
         get_access_token(j["ClientID"],j["ClientSecret"],j["Scope"]);
     }
 
