@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <thread>
+#include <mutex>
 #include <nlohmann/json.hpp>
 #include "get_vector.hpp"
 #include "shuffle_alg.hpp"
@@ -8,6 +9,7 @@
 #include "rand_str.hpp"
 #include "log_in_un_authenticated.hpp"
 #include "httpserver.hpp"
+#include "auth.hpp"
 
 
 int main(){
@@ -16,9 +18,19 @@ int main(){
     string state = randomStrGen(16);
     std::thread serverThread(serverHTML,state);
     check_config_folders();
-    log_in_un_authenticated(state);
-
-
+    std::mutex m;
+    m.lock();
+    nlohmann::json j = read_config();
+    m.unlock();
+    //  || j["ClientID"] != ""  || j["RefreshToken"] != "" 
+    if (j["ClientID"] == "null" || j["ClientSecret"] == "null" || !j.is_string()) {
+       log_in_un_authenticated(state); 
+    } else {
+        std::cout << "authenticated, getting access token \n";
+        std::cout << "\nClientID: "<< j["ClientID"];
+        std::cout << "\nClientSecret: "<< j["ClientSecret"];
+        get_access_token(j["ClientID"],j["ClientSecret"],j["Scope"]);
+    }
 
     
     if (serverThread.joinable()){

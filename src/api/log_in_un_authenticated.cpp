@@ -28,7 +28,7 @@ void log_in_un_authenticated(std::string state){
 
     cout << "Click Save\n";
     cout << "====================================\n";
-    while (ClientID == "None" || ClientSecret == "None"){
+        while (ClientID == "None" || ClientSecret == "None"){
 
         cout << "Okay, now copy the ==Client ID== and paste it in here: ";
 
@@ -43,5 +43,4 @@ void log_in_un_authenticated(std::string state){
         cout << "\n\n Done! Now Authenticate in your browser.\n\n";
         get_auth_code( ClientID, ClientSecret, state );
     }
-
 }

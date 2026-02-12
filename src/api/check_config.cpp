@@ -18,12 +18,13 @@ void write_to_config();
 
 nlohmann::json read_config();
 
+std::filesystem::path get_main_path();
+
 void check_config_folders()
 {   
     using std::filesystem::path;
 
-    path envpath = getEnvironmentVariable("LOCALAPPDATA");
-    path mainpath = envpath / "Spotify Auto Shuffler";
+    auto mainpath = get_main_path();
 
 
     if ( !std::filesystem::exists ( mainpath )) {
@@ -52,6 +53,15 @@ const char *getEnvironmentVariable(const char* varname) {
 
     return env_var_value;
 }
+
+std::filesystem::path get_main_path(){
+    using std::filesystem::path;
+
+    path envpath = getEnvironmentVariable("LOCALAPPDATA");
+    path mainpath = envpath / "Spotify Auto Shuffler";
+    return mainpath;
+};
+
 
 void make_folder(std::string folder , std::filesystem::path envpath){
 
@@ -82,7 +92,9 @@ void make_json_file(std::string name,std::filesystem::path path){
         json j = {
             {"ClientID",""},
             {"ClientSecret",""},
-            {"State", ""}
+            {"AccessToken",""},
+            {"RefreshToken",""},
+            {"Scope",""}
         };
         file << j.dump(4);
         file.close();
@@ -94,7 +106,7 @@ void make_json_file(std::string name,std::filesystem::path path){
     
 
     if (std::filesystem::exists(path)){
-        std::cout << "File Created: " << path;
+        std::cout << "File Created: " << path << '\n';
     } else {
         std::cout << "File " << path << " did not create!! Error: ";
         std::ofstream file(path);
@@ -102,9 +114,9 @@ void make_json_file(std::string name,std::filesystem::path path){
         json j = {
             {"ClientID",""},
             {"ClientSecret",""},
-            {"State", ""},
             {"AccessToken",""},
-            {"RefreshToken",""}
+            {"RefreshToken",""},
+            {"Scope",""}
         };
         file << j.dump(4);
         file.close();
@@ -112,16 +124,19 @@ void make_json_file(std::string name,std::filesystem::path path){
 }
 
 void write_to_config(std::string key, std::string pair){
-
     using std::filesystem::path; using json = nlohmann::json;
-    path mainpath = getEnvironmentVariable("LOCALAPPDATA");
+    
+    auto mainpath = get_main_path();
+
     path filePath = mainpath / "config" / "config.json";
 
     if ( std::filesystem::exists( filePath )) {
+
         std::ifstream fileI(filePath);
         json j;
         try
         {
+            
             fileI >> j;
         }
         catch(json::parse_error& e)
@@ -143,13 +158,13 @@ void write_to_config(std::string key, std::string pair){
             }
             
         }
-    }
+    } else {std::cerr << " This path doesnt exist?? " << filePath;}
     
 }
 
 nlohmann::json read_config(){
     using std::filesystem::path; using json = nlohmann::json;
-    path mainpath = getEnvironmentVariable("LOCALAPPDATA");
+    auto mainpath = get_main_path();
     path filePath = mainpath / "config" / "config.json";
     json j;
     if ( std::filesystem::exists( filePath )) {

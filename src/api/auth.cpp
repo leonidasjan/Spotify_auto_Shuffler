@@ -3,6 +3,7 @@
 #include "encoder.hpp"
 #include "httpserver.hpp"
 #include "rand_str.hpp"
+#include "check_config.hpp"
 
 #include <iostream>
 #include <string>
@@ -15,13 +16,18 @@
 #include <shellapi.h>
 using std::string;
 void get_auth_code(string ClientID, string ClientSecret, string state){
-    const string scope = "user-library-read user-library-modify";
+    string scope = "user-library-read user-library-modify";
     const string Redirect_URI = "http://127.0.0.1:54789/callback";
-    if (ClientID == "None" || ClientSecret == "None" || state == "")
+    if (ClientID == "" || ClientSecret == "" || state == "")
     {
         log_in_un_authenticated(state);
         std::cout << "Please try again \n";
     } else {
+
+        write_to_config( "ClientID", ClientID );
+        write_to_config( "ClientSecret", ClientSecret );
+        write_to_config( "Scope", scope);
+
         std::cout << "Opening up browser...\n"; 
         std::map<string,string> m =
          {{"1response_type","code"},
@@ -38,10 +44,11 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         // httplib::Client cli("https://accounts.spotify.com/api/token");
         //  cli.Post("https://accounts.spotify.com/api/token",)
         
-    }
-// void get_access_token(std::string){
-    
-// }
+    };
+};
+void get_access_token(std::string ClientID, std::string ClientSecret, std::string scope){
+    std::cout << "TODO get access token";   
+};
 
 
     
@@ -52,4 +59,3 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
     //     redirect_uri: redirect_uri,
     //     grant_type: 'authorization_code'
     //   },
-}

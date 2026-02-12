@@ -40,7 +40,7 @@ void serverHTML(std::string state){
   });
 
   std::cout << " \n [HTTPserver] Starting on http://127.0.0.1:54789 \n";
-  std::cout << "\n[HTTPserver] Started\n";
+  std::cout << "\n [HTTPserver] Started\n";
   svr.listen("127.0.0.1", 54789);
   std::cout << "\n [HTTPserver] Stopped. \n";
 }
