@@ -1,9 +1,11 @@
-
+#include "yhirose/httplib.h"
 #include "log_in_un_authenticated.hpp"
 #include "encoder.hpp"
 #include "httpserver.hpp"
 #include "rand_str.hpp"
 #include "check_config.hpp"
+
+#include "tobiaslocker/base64.hpp"
 
 #include <iostream>
 #include <string>
@@ -11,6 +13,7 @@
 #include <map>
 #include <thread>
 #include <chrono>
+#include <nlohmann/json.hpp>
 
 #include <windows.h>
 #include <shellapi.h>
@@ -46,8 +49,38 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         
     };
 };
-void get_access_token(std::string ClientID, std::string ClientSecret, std::string scope){
-    std::cout << "TODO get access token";   
+void get_access_token(nlohmann::json j, std::string req_code){
+    std::cout << "in func\n";
+    httplib::Client cli("https://accounts.spotify.com/api");
+    std::string clientid = j["ClientID"];
+    std::string clientsecret = j["ClientSecret"];
+    std::string auth = clientid+":"+clientsecret;
+
+    httplib::Headers headers = {
+        {"Authorization", "Basic " + base64::to_base64(auth)}
+    };
+    std::cout << "Authorization: Basic " + base64::to_base64(auth) << '\n';
+    nlohmann::json body = {
+            {"grant_type","authorization_code"},
+            {"code",req_code},
+            {"redirect_uri","http://127.0.0.1:54789/callback"}
+        };
+
+    std::cout << body;
+    std::cout << "before res\n";
+    auto res = cli.Post("/token", headers, body,"application/x-www-form-urlencoded");
+    std::cout << "after res\n";
+    if (res) {
+        std::cout << "Success?\n";
+        std::cout << res->status << "\n";
+        std::cout << res->body << "\n";
+    } else {
+        std::cout << "Request failed\n";
+    }
+};
+
+void get_refresh_token(){
+    std::cout << "get refresh token";
 };
 
 

@@ -1,3 +1,4 @@
+#include <nlohmann/json.hpp>
 #include <string>
 #ifndef AUTH_HPP
 #define AUTH_HPP
@@ -7,5 +8,7 @@ void get_auth_code(
      string ClientSecret="None",
      string state=""
     );
-void get_access_token(std::string ClientID, std::string ClientSecret, std::string scope);
+void get_access_token(nlohmann::json j, std::string req_code);
+void get_refresh_token();
+
 #endif

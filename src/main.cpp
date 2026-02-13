@@ -27,7 +27,7 @@ int main(){
        log_in_un_authenticated(state); 
     } else {
         // std::cout << "authenticated, getting access token \n";
-        get_access_token(j["ClientID"],j["ClientSecret"],j["Scope"]);
+        get_refresh_token();
     }
 
     

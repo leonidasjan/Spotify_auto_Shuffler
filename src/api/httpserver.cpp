@@ -2,11 +2,14 @@
 #include "encoder.hpp"
 #include "tobiaslocker/base64.hpp" 
 #include "auth.hpp"
+#include "check_config.hpp"
 
+#include <nlohmann/json.hpp>
 #include <string>
 #include <iostream>
 #include <thread>
 #include <map>
+#include <mutex>
 
 void serverHTML(std::string state){
   using namespace httplib;
@@ -32,8 +35,14 @@ void serverHTML(std::string state){
       auto req_error = req.get_param_value("error");
       res.set_content(req_error,"text/plain");
     } else {
+      // std::mutex m;
+      // std::lock_guard<std::mutex> lock(m);
       res.set_content("Approved","text/plain");
-      // get_access_token(req_code);
+
+      write_to_config("AccessToken",req_code);
+
+
+      get_access_token(read_config(),req_code);
     }
 
 
