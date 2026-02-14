@@ -50,8 +50,9 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
     };
 };
 void get_access_token(nlohmann::json j, std::string req_code){
-    std::cout << "in func\n";
-    httplib::SSLClient cli("https://accounts.spotify.com/api");
+    httplib::SSLClient cli("accounts.spotify.com", 443);
+    // httplib::SSLClient cli2("https://httpbin.org", 443);
+
 
     std::string clientid = j["ClientID"];
     std::string clientsecret = j["ClientSecret"];
@@ -61,23 +62,37 @@ void get_access_token(nlohmann::json j, std::string req_code){
         {"Authorization", "Basic " + base64::to_base64(auth)}
     };
 
+    //Header OK , Body OK?
 
     std::map<string,string> body =
          {{"1grant_type","authorization_code"},
-         {"2code",req_code},
-         {"3redirect_uri","http://127.0.0.1:54789/callback"}
+         {"2redirect_uri","http://127.0.0.1:54789/callback"},
+         {"3code",req_code}
         };
 
-    auto res = cli.Post("/token", headers, encode_hashmap_withoutURL(body),"application/x-www-form-urlencoded");
+    std::string body_s = encode_hashmap_withoutURL(body);
 
-    if (res) {
-        std::cout << "Success?\n";
-        std::cout << res->status << "\n";
-        std::cout << res->body << "\n";
-    } else {
-        std::cout << "Request failed\n";
-        std::cout << res.error();
-    }
+
+    auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded");
+    // auto res2 = cli2.Post("/post",headers,body_s,"application/x-www-form-urlencoded");
+
+
+    // if (res) {
+    //     std::cout << "Success?\n";
+    //     std::cout << res->status << "\n";
+    //     // std::cout << res->body << "\n";
+    // } else {
+    //     std::cout << "Request failed\n";
+    //     std::cout << res.error();
+    // }
+    // if (res2) {
+    //     std::cout << "Success?\n";
+    //     std::cout << res2->status << "\n";
+    //     std::cout << res2->body << "\n";
+    // } else {
+    //     std::cout << "Request failed\n";
+    //     std::cout << res2.error();
+    // }
 };
 
 void get_refresh_token(){

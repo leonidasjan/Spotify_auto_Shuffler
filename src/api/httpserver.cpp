@@ -41,10 +41,7 @@ void serverHTML(std::string state){
 
       write_to_config("AccessToken",req_code);
       nlohmann::json j = read_config();
-      std::thread clientThread(get_access_token,j,req_code);
-      if (clientThread.joinable()){
-        clientThread.join();
-      };
+      get_access_token(j,req_code);
     }
 
 
