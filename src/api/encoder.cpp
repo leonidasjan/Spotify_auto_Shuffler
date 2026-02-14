@@ -56,7 +56,7 @@ string encode_hashmap( string base_url, map<string, string> map ) {
 
 string encode_hashmap_withoutURL(map<string, string> map ) {
 
-    string result = "?";
+    string result;
 
     for ( auto keypair : map ) {
 
@@ -69,7 +69,7 @@ string encode_hashmap_withoutURL(map<string, string> map ) {
 
     //Cleanup
     //  this erase removes & at the start
-    result.erase(1,1);
+    result.erase(0,1);
     // Remove any null terminate char
     size_t temp = 0;
         for (unsigned char c : result){

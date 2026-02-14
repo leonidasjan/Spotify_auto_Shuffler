@@ -51,7 +51,8 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
 };
 void get_access_token(nlohmann::json j, std::string req_code){
     std::cout << "in func\n";
-    httplib::Client cli("https://accounts.spotify.com/api");
+    httplib::SSLClient cli("https://accounts.spotify.com/api");
+
     std::string clientid = j["ClientID"];
     std::string clientsecret = j["ClientSecret"];
     std::string auth = clientid+":"+clientsecret;
@@ -59,28 +60,23 @@ void get_access_token(nlohmann::json j, std::string req_code){
     httplib::Headers headers = {
         {"Authorization", "Basic " + base64::to_base64(auth)}
     };
-    std::cout << "Authorization: Basic " + base64::to_base64(auth) << '\n';
-    // nlohmann::json body = {
-    //         {"grant_type","authorization_code"},
-    //         {"code",req_code},
-    //         {"redirect_uri","http://127.0.0.1:54789/callback"}
-    //     };
-    std::map<string,string> m =
+
+
+    std::map<string,string> body =
          {{"1grant_type","authorization_code"},
          {"2code",req_code},
          {"3redirect_uri","http://127.0.0.1:54789/callback"}
         };
 
-    // uzyj twojego encodera stpid niga
-    std::cout << body.dump();
+    auto res = cli.Post("/token", headers, encode_hashmap_withoutURL(body),"application/x-www-form-urlencoded");
 
-    auto res = cli.Post("/token", headers, encoder(),"application/x-www-form-urlencoded");
     if (res) {
         std::cout << "Success?\n";
         std::cout << res->status << "\n";
         std::cout << res->body << "\n";
     } else {
         std::cout << "Request failed\n";
+        std::cout << res.error();
     }
 };
 
