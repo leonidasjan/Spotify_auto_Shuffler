@@ -60,15 +60,21 @@ void get_access_token(nlohmann::json j, std::string req_code){
         {"Authorization", "Basic " + base64::to_base64(auth)}
     };
     std::cout << "Authorization: Basic " + base64::to_base64(auth) << '\n';
-    nlohmann::json body = {
-            {"grant_type","authorization_code"},
-            {"code",req_code},
-            {"redirect_uri","http://127.0.0.1:54789/callback"}
+    // nlohmann::json body = {
+    //         {"grant_type","authorization_code"},
+    //         {"code",req_code},
+    //         {"redirect_uri","http://127.0.0.1:54789/callback"}
+    //     };
+    std::map<string,string> m =
+         {{"1grant_type","authorization_code"},
+         {"2code",req_code},
+         {"3redirect_uri","http://127.0.0.1:54789/callback"}
         };
 
+    // uzyj twojego encodera stpid niga
     std::cout << body.dump();
 
-    auto res = cli.Post("/token", headers, body.dump(),"application/x-www-form-urlencoded");
+    auto res = cli.Post("/token", headers, encoder(),"application/x-www-form-urlencoded");
     if (res) {
         std::cout << "Success?\n";
         std::cout << res->status << "\n";

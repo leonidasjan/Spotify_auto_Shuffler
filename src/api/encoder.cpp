@@ -54,6 +54,38 @@ string encode_hashmap( string base_url, map<string, string> map ) {
     return base_url+result.erase(1,1);
 };
 
+string encode_hashmap_withoutURL(map<string, string> map ) {
+
+    string result = "?";
+
+    for ( auto keypair : map ) {
+
+        result +='&';
+        string str1 = keypair.first;
+        // .erase removes the incrementing index at the start
+        result += encoder(str1.erase(0,1)) + '=' + encoder(keypair.second);
+
+    };
+
+    //Cleanup
+    //  this erase removes & at the start
+    result.erase(1,1);
+    // Remove any null terminate char
+    size_t temp = 0;
+        for (unsigned char c : result){
+
+            if ((int)c == 0) {
+                if ( result.size() > temp ) { 
+                    result.erase(temp,1);
+                };
+            };
+            temp++;
+        };
+
+
+    return result;
+};
+
 // For some reason, you have to put a indexing number in order for the map to be sorted.
 // Without '?' character at the end of base_url
 string encode_hashmap_ordered( string base_url ,map<string, string> map ) {
