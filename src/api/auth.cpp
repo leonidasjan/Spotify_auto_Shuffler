@@ -66,10 +66,9 @@ void get_access_token(nlohmann::json j, std::string req_code){
             {"redirect_uri","http://127.0.0.1:54789/callback"}
         };
 
-    std::cout << body;
-    std::cout << "before res\n";
-    auto res = cli.Post("/token", headers, body,"application/x-www-form-urlencoded");
-    std::cout << "after res\n";
+    std::cout << body.dump();
+
+    auto res = cli.Post("/token", headers, body.dump(),"application/x-www-form-urlencoded");
     if (res) {
         std::cout << "Success?\n";
         std::cout << res->status << "\n";

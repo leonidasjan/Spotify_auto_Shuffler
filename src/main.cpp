@@ -21,13 +21,15 @@ int main(){
     std::mutex m;
     m.lock();
     nlohmann::json j = read_config();
+    std::string req_code = j["AccessToken"];
     m.unlock();
     //  || j["ClientID"] != ""  || j["RefreshToken"] != "" 
     if (j["ClientID"] == "" || j["ClientSecret"] == "null" || j.is_string()) {
        log_in_un_authenticated(state); 
     } else {
         // std::cout << "authenticated, getting access token \n";
-        get_refresh_token();
+       get_access_token(j,req_code);
+
     }
 
     

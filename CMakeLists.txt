@@ -15,6 +15,6 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 add_executable(main ${SOURCES})
 
 # Add flags
-target_compile_options(main PRIVATE -Wall -Wextra -pedantic)
+target_compile_options(main PRIVATE -Wall -Wextra -pedantic -fdiagnostics-all-candidates)
 
 target_link_libraries(main PRIVATE ws2_32)

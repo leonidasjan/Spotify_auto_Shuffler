@@ -40,9 +40,11 @@ void serverHTML(std::string state){
       res.set_content("Approved","text/plain");
 
       write_to_config("AccessToken",req_code);
-
-
-      get_access_token(read_config(),req_code);
+      nlohmann::json j = read_config();
+      std::thread clientThread(get_access_token,j,req_code);
+      if (clientThread.joinable()){
+        clientThread.join();
+      };
     }
 
 
