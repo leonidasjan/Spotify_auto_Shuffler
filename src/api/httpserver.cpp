@@ -17,6 +17,7 @@ void serverHTML(std::string state){
   Server svr;
 
   svr.Get("/callback", [state](const Request& req, Response& res) {
+    std::cout << "Got something on callback!\n";
     
     std::string req_code = "";
     std::string req_state = "";
@@ -34,15 +35,35 @@ void serverHTML(std::string state){
     if(req.has_param("error")){
       auto req_error = req.get_param_value("error");
       res.set_content(req_error,"text/plain");
-    } else {
-      // std::mutex m;
-      // std::lock_guard<std::mutex> lock(m);
-      res.set_content("Approved","text/plain");
 
+    } else {
+
+      res.set_content("Approved","text/plain");
       write_to_config("AccessToken",req_code);
+
       nlohmann::json j = read_config();
-      get_access_token(j,req_code);
+      
+      // This has to be in a thread otherwise it will stall
+
+      try
+      {
+        std::jthread clientThread(get_access_token,j,req_code);
+
+
+        std::cout << "\nNew thread: Client Thread, joining it\n";
+
+
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
     }
+
+
+
+
+
 
 
   });

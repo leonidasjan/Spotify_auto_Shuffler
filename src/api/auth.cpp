@@ -14,6 +14,7 @@
 #include <thread>
 #include <chrono>
 #include <nlohmann/json.hpp>
+#include <mutex>
 
 #include <windows.h>
 #include <shellapi.h>
@@ -44,14 +45,14 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
        
         // Open the browser
         ShellExecute(0, 0, auth_link.c_str(), 0, 0 , SW_SHOW );
-        // httplib::Client cli("https://accounts.spotify.com/api/token");
-        //  cli.Post("https://accounts.spotify.com/api/token",)
+
+        std::cout << "End of get_auth_code()\n";
         
     };
 };
 void get_access_token(nlohmann::json j, std::string req_code){
+
     httplib::SSLClient cli("accounts.spotify.com", 443);
-    // httplib::SSLClient cli2("https://httpbin.org", 443);
 
 
     std::string clientid = j["ClientID"];
@@ -71,40 +72,30 @@ void get_access_token(nlohmann::json j, std::string req_code){
         };
 
     std::string body_s = encode_hashmap_withoutURL(body);
+    std::cout <<"Sending a post request\n";
+    try
+    {
+        std::mutex m;
+        std::lock_guard<std::mutex> lock(m);
 
-
-    auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded");
-    // auto res2 = cli2.Post("/post",headers,body_s,"application/x-www-form-urlencoded");
-
-
-    // if (res) {
-    //     std::cout << "Success?\n";
-    //     std::cout << res->status << "\n";
-    //     // std::cout << res->body << "\n";
-    // } else {
-    //     std::cout << "Request failed\n";
-    //     std::cout << res.error();
-    // }
-    // if (res2) {
-    //     std::cout << "Success?\n";
-    //     std::cout << res2->status << "\n";
-    //     std::cout << res2->body << "\n";
-    // } else {
-    //     std::cout << "Request failed\n";
-    //     std::cout << res2.error();
-    // }
+        auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded");
+        if (res) {
+            std::cout << "Success?\n";
+            std::cout << res->status << "\n";
+            std::cout << res->body << "\n";
+        } else {
+        std::cout << "Request failed\n";
+        std::cout << res.error();
+        ;}
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    
 };
 
 void get_refresh_token(){
     std::cout << "get refresh token";
 };
 
-
-    
-    //  var authOptions = {
-    //   url: 'https://accounts.spotify.com/api/token',
-    //   form: {
-    //     code: code,
-    //     redirect_uri: redirect_uri,
-    //     grant_type: 'authorization_code'
-    //   },
