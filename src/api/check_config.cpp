@@ -90,11 +90,12 @@ void make_json_file(std::string name,std::filesystem::path path){
         std::ofstream file(path);
         // write default keys
         json j = {
-            {"ClientID",""},
-            {"ClientSecret",""},
-            {"AccessToken",""},
-            {"RefreshToken",""},
-            {"Scope",""}
+            {"ClientID","None"},
+            {"ClientSecret","None"},
+            {"AccessToken","None"},
+            {"RefreshToken","None"},
+            {"Scope","None"},
+            {"Code","None"}
         };
         file << j.dump(4);
         file.close();
@@ -112,11 +113,12 @@ void make_json_file(std::string name,std::filesystem::path path){
         std::ofstream file(path);
         // write default keys
         json j = {
-            {"ClientID",""},
-            {"ClientSecret",""},
-            {"AccessToken",""},
-            {"RefreshToken",""},
-            {"Scope",""}
+            {"ClientID","None"},
+            {"ClientSecret","None"},
+            {"AccessToken","None"},
+            {"RefreshToken","None"},
+            {"Scope","None"},
+            {"Code","None"}
         };
         file << j.dump(4);
         file.close();

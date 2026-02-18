@@ -19,6 +19,9 @@
 #include <windows.h>
 #include <shellapi.h>
 using std::string;
+
+void get_access_token(nlohmann::json j);
+
 void get_auth_code(string ClientID, string ClientSecret, string state){
     string scope = "user-library-read user-library-modify";
     const string Redirect_URI = "http://127.0.0.1:54789/callback";
@@ -46,11 +49,33 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         // Open the browser
         ShellExecute(0, 0, auth_link.c_str(), 0, 0 , SW_SHOW );
 
-        std::cout << "End of get_auth_code()\n";
         
+
+        // DO THIS ONLY IF HTML SERVER GAVE CONDITION to do it.
+        std::mutex mut;
+        std::unique_lock<std::mutex> lk(mut);
+        nlohmann::json j = read_config();
+        std::string code = j["Code"];
+        while(code == std::string("None"))                                   
+        {
+            lk.unlock();
+            j = read_config();
+            code = j["Code"];
+            std::cout << "Waiting for code ...\n";        
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));   
+            lk.lock();       
+        }
+        
+        std::jthread clientThread(get_access_token,j);
+        std::cout << "\nNew thread: Client Thread, joining it\n";
+        std::cout << "End of get_auth_code()\n";
+
     };
 };
-void get_access_token(nlohmann::json j, std::string req_code){
+void get_access_token(nlohmann::json j){
+    std::mutex m;
+    std::lock_guard<std::mutex> lock(m);
+    std::cout << "Client Thread in action\n";
 
     httplib::SSLClient cli("accounts.spotify.com", 443);
 
@@ -63,7 +88,7 @@ void get_access_token(nlohmann::json j, std::string req_code){
         {"Authorization", "Basic " + base64::to_base64(auth)}
     };
 
-    //Header OK , Body OK?
+    std::string req_code = j["Code"];
 
     std::map<string,string> body =
          {{"1grant_type","authorization_code"},
@@ -75,9 +100,6 @@ void get_access_token(nlohmann::json j, std::string req_code){
     std::cout <<"Sending a post request\n";
     try
     {
-        std::mutex m;
-        std::lock_guard<std::mutex> lock(m);
-
         auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded");
         if (res) {
             std::cout << "Success?\n";
