@@ -1,3 +1,4 @@
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "yhirose/httplib.h"
 #include "encoder.hpp"
 #include "tobiaslocker/base64.hpp" 

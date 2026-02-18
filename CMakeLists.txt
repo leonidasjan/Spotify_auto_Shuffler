@@ -12,11 +12,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # -----------------------------
-# Options
-# -----------------------------
-option(ENABLE_HTTPS "Enable HTTPS support (cpp-httplib)" ON)
-
-# -----------------------------
 # Sources
 # -----------------------------
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
@@ -46,48 +41,18 @@ else()
 endif()
 
 # -----------------------------
-# HTTPS / TLS support
+# Platform-specific system libs
 # -----------------------------
-if (ENABLE_HTTPS)
-    find_package(OpenSSL)
+find_package(OpenSSL REQUIRED)
 
-    if (OpenSSL_FOUND)
-        message(STATUS "HTTPS enabled: using OpenSSL")
+target_link_libraries(main PRIVATE
+    OpenSSL::SSL
+    OpenSSL::Crypto
+)
 
-        target_compile_definitions(main PRIVATE CPPHTTPLIB_OPENSSL_SUPPORT)
-
-        target_link_libraries(main PRIVATE
-            OpenSSL::SSL
-            OpenSSL::Crypto
-        )
-
-        if (WIN32)
-            target_link_libraries(main PRIVATE
-                crypt32
-                ws2_32
-            )
-        endif()
-
-    else()
-        message(STATUS "OpenSSL not found, trying mbedTLS")
-
-        find_package(mbedTLS)
-
-        if (mbedTLS_FOUND)
-            message(STATUS "HTTPS enabled: using mbedTLS")
-
-            target_compile_definitions(main PRIVATE CPPHTTPLIB_MBEDTLS_SUPPORT)
-
-            target_link_libraries(main PRIVATE
-                mbedtls
-                mbedcrypto
-                mbedx509
-            )
-
-        else()
-            message(FATAL_ERROR
-                "ENABLE_HTTPS is ON but no TLS backend was found (OpenSSL or mbedTLS)"
-            )
-        endif()
-    endif()
+if (WIN32)
+    target_link_libraries(main PRIVATE
+        ws2_32
+        crypt32
+    )
 endif()
