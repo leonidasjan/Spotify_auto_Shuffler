@@ -33,11 +33,7 @@ int main(){
         // NO
        log_in_un_authenticated(state); 
     } else {
-        // YES
-        // std::cout << "authenticated, getting refresh token \n";
-        // // // // get_access_token(j,req_code);
         get_refresh_token();
-
     }
 
     std::cout << "\nBack to main\n";

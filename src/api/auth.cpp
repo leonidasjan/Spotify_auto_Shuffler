@@ -1,3 +1,4 @@
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "yhirose/httplib.h"
 #include "log_in_un_authenticated.hpp"
 #include "encoder.hpp"
@@ -18,6 +19,7 @@
 
 #include <windows.h>
 #include <shellapi.h>
+
 using std::string;
 
 void get_access_token(nlohmann::json j);
@@ -51,11 +53,10 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
 
         
 
-        // DO THIS ONLY IF HTML SERVER GAVE CONDITION to do it.
         std::mutex mut;
         std::unique_lock<std::mutex> lk(mut);
         nlohmann::json j = read_config();
-        std::string code = j["Code"];
+        string code = j["Code"];
         while(code == std::string("None"))                                   
         {
             lk.unlock();
@@ -66,19 +67,17 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
             lk.lock();       
         }
         
-        std::jthread clientThread(get_access_token,j);
+        std::thread clientThread(get_access_token,j);
+        if (clientThread.joinable()){clientThread.join();};
         std::cout << "\nNew thread: Client Thread, joining it\n";
         std::cout << "End of get_auth_code()\n";
-
     };
 };
 void get_access_token(nlohmann::json j){
     std::mutex m;
     std::lock_guard<std::mutex> lock(m);
-    std::cout << "Client Thread in action\n";
-
     httplib::SSLClient cli("accounts.spotify.com", 443);
-
+    std::cout << "Client Thread in action\n";
 
     std::string clientid = j["ClientID"];
     std::string clientsecret = j["ClientSecret"];
@@ -97,23 +96,19 @@ void get_access_token(nlohmann::json j){
         };
 
     std::string body_s = encode_hashmap_withoutURL(body);
+
     std::cout <<"Sending a post request\n";
-    try
-    {
-        auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded");
-        if (res) {
-            std::cout << "Success?\n";
-            std::cout << res->status << "\n";
-            std::cout << res->body << "\n";
-        } else {
-        std::cout << "Request failed\n";
+
+    httplib::Result res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded");
+    cli.stop();
+    if (res) {
+        std::cout << "Success?\n";
+        std::cout << res->status << "\n";
+        std::cout << res->body << "\n";
+    } else {
         std::cout << res.error();
-        ;}
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
+    };
+    
     
 };
 
