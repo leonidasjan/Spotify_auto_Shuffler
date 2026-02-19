@@ -74,42 +74,46 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
     };
 };
 void get_access_token(nlohmann::json j){
-    std::mutex m;
-    std::lock_guard<std::mutex> lock(m);
-    httplib::SSLClient cli("accounts.spotify.com", 443);
-    std::cout << "Client Thread in action\n";
 
+    std::cout << "Client Thread in action\n";
+    
     std::string clientid = j["ClientID"];
     std::string clientsecret = j["ClientSecret"];
     std::string auth = clientid+":"+clientsecret;
-
+    
     httplib::Headers headers = {
         {"Authorization", "Basic " + base64::to_base64(auth)}
     };
-
+    
     std::string req_code = j["Code"];
-
+    
     std::map<string,string> body =
-         {{"1grant_type","authorization_code"},
-         {"2redirect_uri","http://127.0.0.1:54789/callback"},
-         {"3code",req_code}
+    {{"1grant_type","authorization_code"},
+    {"2redirect_uri","http://127.0.0.1:54789/callback"},
+    {"3code",req_code}
+};
+
+std::string body_s = encode_hashmap_withoutURL(body);
+
+std::cout <<"Sending a post request\n";
+
+try
+{
+        httplib::SSLClient cli("accounts.spotify.com", 443);
+        if (auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")) {
+        std::cout << res->status;
+        std::cout << res->body;
+        cli.stop();
         };
-
-    std::string body_s = encode_hashmap_withoutURL(body);
-
-    std::cout <<"Sending a post request\n";
-
-    httplib::Result res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded");
-    cli.stop();
-    if (res) {
-        std::cout << "Success?\n";
-        std::cout << res->status << "\n";
-        std::cout << res->body << "\n";
-    } else {
-        std::cout << res.error();
-    };
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     
     
+    std::cout << "Stopping htmlClient\n";
+    std::cout << "End of get_access_token\n";
 };
 
 void get_refresh_token(){
