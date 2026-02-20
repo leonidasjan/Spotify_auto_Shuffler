@@ -67,13 +67,13 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
             lk.lock();       
         }
         
-        std::thread clientThread(get_access_token,std::ref(j));
-        if (clientThread.joinable()){clientThread.join();};
         std::cout << "\nNew thread: Client Thread, joining it\n";
+        std::thread clientThread(get_access_token,j);
+        if (clientThread.joinable()){clientThread.join();};
         std::cout << "End of get_auth_code()\n";
     };
 };
-void get_access_token(nlohmann::json& j){
+void get_access_token(nlohmann::json j){
 
     SSL_library_init();
 
