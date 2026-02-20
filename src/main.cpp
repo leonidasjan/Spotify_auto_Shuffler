@@ -14,6 +14,9 @@
 
 int main(){
     using std::cout, std::string, std::thread;
+
+    
+
     cout << "Welcome to Spotify Auto Shuffler. \n";
 
     string state = randomStrGen(16);
