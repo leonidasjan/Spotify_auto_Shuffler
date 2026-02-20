@@ -140,6 +140,7 @@ void write_to_config(std::string key, std::string pair){
         {
             
             fileI >> j;
+            fileI.close();
         }
         catch(json::parse_error& e)
         {
@@ -160,7 +161,7 @@ void write_to_config(std::string key, std::string pair){
             }
             
         }
-    } else {std::cerr << " This path doesnt exist?? " << filePath;}
+    } else {std::cerr << " This path doesnt exist?? " << filePath ;}
     
 }
 

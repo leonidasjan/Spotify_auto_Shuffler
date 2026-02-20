@@ -93,27 +93,58 @@ void get_access_token(nlohmann::json j){
     {"3code",req_code}
 };
 
-std::string body_s = encode_hashmap_withoutURL(body);
+    std::string body_s = encode_hashmap_withoutURL(body);
 
-std::cout <<"Sending a post request\n";
+    std::string temp_response;
 
-try
-{
-        httplib::SSLClient cli("accounts.spotify.com", 443);
-        if (auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")) {
-        std::cout << res->status;
-        std::cout << res->body;
-        cli.stop();
+    std::cout <<"\nSending a post request\n";
+
+
+    httplib::SSLClient cli("accounts.spotify.com", 443);
+    if (auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")){
+        
+        const auto status = res->status;
+
+        switch (status) {
+
+            case httplib::OK_200:
+
+                std::cout << "\nSuccess\n";
+
+            break;
+            
+            case httplib::BadRequest_400:
+
+                std::cout << "\nSomething went wrong\n";
+                std::cout << res->body;
+            break;
+        }
+
+    } else {
+        std::cout << "opa an error";
+        // Check the error type
+        const auto err = res.error();
+
+        switch (err) {
+            case httplib::Error::SSLConnection:
+                std::cout << "SSL connection failed, SSL error: "
+                        << res.ssl_error() << std::endl;
+            break;
+
+            default:
+                std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
         };
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-    
-    
-    std::cout << "Stopping htmlClient\n";
-    std::cout << "End of get_access_token\n";
+    };
+    std::cout << "stopping html client\n";
+    if (cli.is_socket_open()){
+        std::cout << "Socket is still open before cli.stop()\n";
+    };
+    cli.stop();
+    if (cli.is_socket_open()){
+        std::cout << "Socket is still open!!!!!  might crash\n";
+    };
+
+    std::cout << "End of get_access_token" << std::endl;
 };
 
 void get_refresh_token(){

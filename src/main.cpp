@@ -29,7 +29,7 @@ int main(){
     //  || j["ClientID"] != ""  || j["RefreshToken"] != "" 
 
     // ACCESS TOKEN?
-    if (j["ClientID"] == "None" || j["ClientSecret"] == "None" || j.is_string()) {
+    if (j["ClientID"] == "None" || j["ClientSecret"] == "None" || j["AccessToken"] == "None" || j.is_string()) {
         // NO
        log_in_un_authenticated(state); 
     } else {
