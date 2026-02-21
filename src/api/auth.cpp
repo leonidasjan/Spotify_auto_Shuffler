@@ -22,7 +22,7 @@
 
 using std::string;
 
-void get_access_token(nlohmann::json j);
+void get_access_token();
 
 void get_auth_code(string ClientID, string ClientSecret, string state){
     string scope = "user-library-read user-library-modify";
@@ -68,15 +68,16 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         }
         
         std::cout << "\nNew thread: Client Thread, joining it\n";
-        std::thread clientThread(get_access_token,j);
+        std::thread clientThread(get_access_token);
         if (clientThread.joinable()){clientThread.join();};
         std::cout << "End of get_auth_code()\n";
     };
 };
-void get_access_token(nlohmann::json j){
+void get_access_token(){
 
     SSL_library_init();
 
+    nlohmann::json j = read_config();
     std::cout << "Client Thread in action\n";
     
     std::string clientid = j["ClientID"];

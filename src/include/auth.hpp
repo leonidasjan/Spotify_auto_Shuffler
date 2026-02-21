@@ -8,7 +8,7 @@ void get_auth_code(
      string ClientSecret="None",
      string state=""
     );
-void get_access_token(nlohmann::json j);
+void get_access_token();
 void get_refresh_token();
 
 #endif
