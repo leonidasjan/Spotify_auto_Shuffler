@@ -70,7 +70,6 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         std::cout << "\nNew thread: Client Thread, joining it\n";
         std::thread clientThread(get_access_token);
         if (clientThread.joinable()){clientThread.join();};
-        std::cout << "End of get_auth_code()\n";
     };
 };
 void get_access_token(){
@@ -98,40 +97,42 @@ void get_access_token(){
 
     std::string body_s = encode_hashmap_withoutURL(body);
 
-    std::string temp_response;
+    nlohmann::json response;
 
     std::cout <<"\nSending a post request\n";
 
 
     httplib::SSLClient cli("accounts.spotify.com", 443);
-    if (auto res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")){
-        
-        const auto status = res->status;
+    if (auto html_res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")){
+        const auto status = html_res->status;
 
         switch (status) {
 
             case httplib::OK_200:
 
-                std::cout << "\nSuccess\n";
+                response = nlohmann::json::parse(html_res->body);
+                write_to_config("AccessToken",response["access_token"]);
+                write_to_config("RefreshToken",response["refresh_token"]);
+                
 
             break;
             
             case httplib::BadRequest_400:
 
                 std::cout << "\nSomething went wrong\n";
-                std::cout << res->body;
+                std::cout << html_res->body;
             break;
         }
 
     } else {
         std::cout << "\nopa an error\n";
         // Check the error type
-        const auto err = res.error();
+        const auto err = html_res.error();
 
         switch (err) {
             case httplib::Error::SSLConnection:
                 std::cout << "SSL connection failed, SSL error: "
-                        << res.ssl_error() << std::endl;
+                        << html_res.ssl_error() << std::endl;
             break;
 
             default:
@@ -142,12 +143,13 @@ void get_access_token(){
     if (cli.is_socket_open()){
         std::cout << "Socket is still open before cli.stop()\n";
     };
+
     cli.stop();
+
     if (cli.is_socket_open()){
         std::cout << "Socket is still open!!!!!  might crash\n";
     };
 
-    std::cout << "End of get_access_token" << std::endl;
 };
 
 void get_refresh_token(){
