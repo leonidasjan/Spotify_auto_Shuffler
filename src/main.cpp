@@ -13,7 +13,7 @@
 
 
 int main(){
-    using std::cout, std::string, std::thread;
+    using std::cout, std::string;
 
     cout << "Welcome to Spotify Auto Shuffler. \n";
 
@@ -22,22 +22,19 @@ int main(){
     check_config_folders();
     
     std::mutex m;
-    std::cout << "Starting to read\n";
     m.lock();
     nlohmann::json j = read_config();
-    std::string req_code = j["AccessToken"];
     m.unlock();
-    //  || j["ClientID"] != ""  || j["RefreshToken"] != "" 
 
-    // ACCESS TOKEN?
     if (j["ClientID"] == "None" || j["ClientSecret"] == "None" || j["AccessToken"] == "None" || j.is_string()) {
-        // NO
+        // user needs access token to continue, start auth proccess
        log_in_un_authenticated(state); 
     } else {
+        // always get refresh token before continuing with requests
         get_refresh_token();
     }
 
-    std::cout << "\nBack to main\n";
+    cout << "\nBack to main\n";
 
 
 }
