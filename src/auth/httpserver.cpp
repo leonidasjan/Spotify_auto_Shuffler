@@ -19,7 +19,7 @@ void serverHTML(std::string state){
   Server svr;
 
   svr.Get("/callback", [state](const Request& req, Response& res) {
-    std::cout << "Got something on callback!\n";
+    std::cout << "Got a response from spotify server!\n";
     std::mutex m;
     std::lock_guard<std::mutex> lock(m);
     
