@@ -57,17 +57,16 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         std::unique_lock<std::mutex> lk(mut);
         nlohmann::json j = read_config();
         string code = j["Code"];
+        std::cout << "Waiting for code ...\n";  
         while(code == std::string("None"))                                   
         {
             lk.unlock();
             j = read_config();
-            code = j["Code"];
-            std::cout << "Waiting for code ...\n";        
+            code = j["Code"];      
             std::this_thread::sleep_for(std::chrono::milliseconds(100));   
             lk.lock();       
         }
         
-        std::cout << "\nNew thread: Client Thread, joining it\n";
         std::thread clientThread(get_access_token);
         if (clientThread.joinable()){clientThread.join();};
     };
@@ -106,7 +105,6 @@ void get_access_token(){
 
     nlohmann::json response;
 
-    std::cout <<"\nSending a post request\n";
 
 
     httplib::SSLClient cli("accounts.spotify.com", 443);
@@ -118,9 +116,17 @@ void get_access_token(){
             case httplib::OK_200:
 
                 response = nlohmann::json::parse(html_res->body);
-                write_to_config("AccessToken",response["access_token"]);
-                write_to_config("RefreshToken",response["refresh_token"]);
-                
+                if(response.contains("access_token")){
+
+                     write_to_config("AccessToken",response["access_token"]);
+                     std::cout << "Obtained: Access Token!\n";
+                };
+
+                if(response.contains("refresh_token")){
+
+                    write_to_config("RefreshToken",response["refresh_token"]);
+                    std::cout << "Obtained: Refresh Token!\n";
+                };
 
             break;
             
@@ -146,8 +152,6 @@ void get_access_token(){
                 std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
         };
     };
-
-    std::cout << "stopping html client\n";
 
     if (cli.is_socket_open()){
         std::cout << "Socket is still open before cli.stop()\n";
@@ -238,7 +242,7 @@ void get_refresh_token(){
                 std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
         };
     };
-    std::cout << "stopping html client\n";
+
     if (cli.is_socket_open()){
         std::cout << "Socket is still open before cli.stop()\n";
     };
