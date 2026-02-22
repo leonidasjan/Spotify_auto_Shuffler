@@ -37,7 +37,7 @@ void serverHTML(std::string state){
       else { write_to_config("Code",req_code); }
       res.set_content("Approved, you can close this window now!","text/plain");
     };
-    
+
     if(req.has_param("error")){
       auto req_error = req.get_param_value("error");
       res.set_content("Error: You probably copied something wrong, try again","text/plain");
@@ -47,9 +47,9 @@ void serverHTML(std::string state){
 
   });
 
-  std::cout << " \n [HTTPserver] Starting on http://127.0.0.1:54789 \n";
-  std::cout << "\n [HTTPserver] Started\n";
+  std::cout << " \n[HTTPserver] Starting on http://127.0.0.1:54789 \n";
+  std::cout << "\n[HTTPserver] Started\n";
   svr.listen("127.0.0.1", 54789);
-  std::cout << "\n [HTTPserver] Stopped. \n";
+  std::cout << "\n[HTTPserver] Stopped. \n";
 }
 
