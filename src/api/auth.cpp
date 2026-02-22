@@ -74,28 +74,35 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
 };
 void get_access_token(){
 
-    SSL_library_init();
+    SSL_library_init(); // dont touch that
 
     nlohmann::json j = read_config();
-    std::cout << "Client Thread in action\n";
     
+    //Client info
+
     std::string clientid = j["ClientID"];
     std::string clientsecret = j["ClientSecret"];
     std::string auth = clientid+":"+clientsecret;
+    std::string req_code = j["Code"];
     
+
+    //Headers
+
     httplib::Headers headers = {
         {"Authorization", "Basic " + base64::to_base64(auth)}
     };
     
-    std::string req_code = j["Code"];
-    
+    //Body
+
     std::map<string,string> body =
     {{"1grant_type","authorization_code"},
     {"2redirect_uri","http://127.0.0.1:54789/callback"},
-    {"3code",req_code}
-};
+    {"3code",req_code}};
 
     std::string body_s = encode_hashmap_withoutURL(body);
+
+
+    // Post request
 
     nlohmann::json response;
 
@@ -139,7 +146,9 @@ void get_access_token(){
                 std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
         };
     };
+
     std::cout << "stopping html client\n";
+
     if (cli.is_socket_open()){
         std::cout << "Socket is still open before cli.stop()\n";
     };
@@ -153,6 +162,92 @@ void get_access_token(){
 };
 
 void get_refresh_token(){
-    std::cout << "get refresh token";
+    nlohmann::json j = read_config();
+
+    //Client info
+
+    std::string clientid = j["ClientID"];
+    std::string clientsecret = j["ClientSecret"];
+    std::string auth = clientid+":"+clientsecret;
+    
+
+    //Headers
+
+    httplib::Headers headers = {
+        {"Authorization", "Basic " + base64::to_base64(auth)}
+    };
+
+
+    //Body
+
+    std::map<string,string> body =
+    {{"1grant_type","refresh_token"},
+    {"2refresh_token",j["RefreshToken"]},
+    {"3client_id",clientid}};
+
+    std::string body_s = encode_hashmap_withoutURL(body);
+
+    // Post Request
+
+    nlohmann::json response;
+    
+    httplib::SSLClient cli("accounts.spotify.com", 443);
+    if (auto html_res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")){
+        const auto status = html_res->status;
+
+        switch (status) {
+
+            case httplib::OK_200:
+
+                response = nlohmann::json::parse(html_res->body);
+
+                if(response.contains("access_token")){
+
+                     write_to_config("AccessToken",response["access_token"]);
+                     std::cout << "Refreshed: Access Token!\n";
+                };
+
+                if(response.contains("refresh_token")){
+
+                    write_to_config("RefreshToken",response["refresh_token"]);
+                    std::cout << "Refreshed: Refresh Token!\n";
+                };
+                
+
+            break;
+            
+            case httplib::BadRequest_400:
+
+                std::cout << "\nSomething went wrong\n";
+                std::cout << html_res->body;
+            break;
+        }
+
+    } else {
+        std::cout << "\nopa an error\n";
+        // Check the error type
+        const auto err = html_res.error();
+
+        switch (err) {
+            case httplib::Error::SSLConnection:
+                std::cout << "SSL connection failed, SSL error: "
+                        << html_res.ssl_error() << std::endl;
+            break;
+
+            default:
+                std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+        };
+    };
+    std::cout << "stopping html client\n";
+    if (cli.is_socket_open()){
+        std::cout << "Socket is still open before cli.stop()\n";
+    };
+
+    cli.stop();
+
+    if (cli.is_socket_open()){
+        std::cout << "Socket is still open!!!!!  might crash\n";
+    };
+
 };
 

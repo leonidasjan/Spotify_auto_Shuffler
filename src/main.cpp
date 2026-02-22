@@ -22,7 +22,7 @@ int main(){
     check_config_folders();
     
     std::mutex m;
-    std::cout << "Starting to read";
+    std::cout << "Starting to read\n";
     m.lock();
     nlohmann::json j = read_config();
     std::string req_code = j["AccessToken"];
@@ -39,7 +39,5 @@ int main(){
 
     std::cout << "\nBack to main\n";
 
-    get_refresh_token();
-    
 
 }
