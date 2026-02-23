@@ -1,11 +1,16 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <thread>
 #include "auth.hpp"
 #include "check_config.hpp"
+#include "httpserver.hpp"
 
-void log_in_un_authenticated(std::string state){
+void log_in_un_authenticated(){
     using std::cout , std::cin, std::string;
+
+    string state = randomStrGen(16);
+    std::jthread serverThread(serverHTML,state);
 
     string ClientID = "None";
     string ClientSecret = "None";

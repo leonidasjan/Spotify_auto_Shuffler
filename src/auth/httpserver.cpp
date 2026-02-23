@@ -45,6 +45,7 @@ void serverHTML(std::string state){
 
     }
 
+
   });
 
   std::cout << " \n[HTTPserver] Starting on http://127.0.0.1:54789 \n";
