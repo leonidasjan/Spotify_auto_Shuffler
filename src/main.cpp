@@ -6,7 +6,6 @@
 #include "get_vector.hpp"
 #include "shuffle_alg.hpp"
 #include "check_config.hpp"
-#include "rand_str.hpp"
 #include "log_in_un_authenticated.hpp"
 #include "auth.hpp"
 

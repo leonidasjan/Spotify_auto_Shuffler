@@ -5,6 +5,7 @@
 #include "auth.hpp"
 #include "check_config.hpp"
 #include "httpserver.hpp"
+#include "rand_str.hpp"
 
 void log_in_un_authenticated(){
     using std::cout , std::cin, std::string;
