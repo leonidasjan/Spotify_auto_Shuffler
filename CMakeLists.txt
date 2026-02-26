@@ -40,6 +40,7 @@ else()
     )
 endif()
 
+
 # -----------------------------
 # Platform-specific system libs
 # -----------------------------
@@ -51,6 +52,10 @@ target_link_libraries(main PRIVATE
 )
 
 if (WIN32)
+    target_compile_definitions(main PRIVATE
+            _WIN32_WINNT=0x0A00
+            WINVER=0x0A00
+        )
     target_link_libraries(main PRIVATE
         ws2_32
         crypt32

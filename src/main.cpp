@@ -8,6 +8,7 @@
 #include "check_config.hpp"
 #include "log_in_un_authenticated.hpp"
 #include "auth.hpp"
+#include "req_api.hpp"
 
 
 int main(){
@@ -34,6 +35,9 @@ int main(){
     }
 
     cout << "\nBack to main\n";
+
+    nlohmann::json Get_User_Profile_Data = req_api::get("api.spotify.com","/v1/me");
+    std::cout << Get_User_Profile_Data;
 
 
     // Request shuffle data from server

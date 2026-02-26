@@ -9,16 +9,18 @@
 //For example "LOCALAPPDATA"
 const char *getEnvironmentVariable(const char* varname);
 
-//First Argument is a name of the folder, second optional argument is a path where the folder is located
-void make_folder(std::string folder="New Folder", std::filesystem::path envpath=getEnvironmentVariable("LOCALAPPDATA"));
+std::filesystem::path get_main_path();
 
-void make_json_file(std::string name="config.json", std::filesystem::path envpath=getEnvironmentVariable("LOCALAPPDATA"));
+//First Argument is a name of the folder, second optional argument is a path where the folder is located
+void make_folder(std::string folder="New Folder", std::filesystem::path envpath=get_main_path());
+
+void make_json_file(std::string name="config.json", std::filesystem::path envpath=get_main_path());
 
 void write_to_config();
 
 nlohmann::json read_config();
 
-std::filesystem::path get_main_path();
+
 
 void check_config_folders()
 {   
@@ -125,6 +127,26 @@ void make_json_file(std::string name,std::filesystem::path path){
     }
 }
 
+nlohmann::json read_config(){
+    using std::filesystem::path; using json = nlohmann::json;
+    auto mainpath = get_main_path();
+    path filePath = mainpath / "config" / "config.json";
+    json j;
+    if ( std::filesystem::exists( filePath )) {
+        std::ifstream fileI(filePath);
+        try
+        {
+            fileI >> j;
+        }
+        catch(json::parse_error& e)
+        {
+            std::cerr << '\n' << "Json error: "<< e.what() << '\n';
+        } 
+    };
+    return j;
+};
+
+
 void write_to_config(std::string key, std::string pair){
     using std::filesystem::path; using json = nlohmann::json;
     
@@ -165,22 +187,4 @@ void write_to_config(std::string key, std::string pair){
     
 }
 
-nlohmann::json read_config(){
-    using std::filesystem::path; using json = nlohmann::json;
-    auto mainpath = get_main_path();
-    path filePath = mainpath / "config" / "config.json";
-    json j;
-    if ( std::filesystem::exists( filePath )) {
-        std::ifstream fileI(filePath);
-        try
-        {
-            fileI >> j;
-        }
-        catch(json::parse_error& e)
-        {
-            std::cerr << '\n' << "Json error: "<< e.what() << '\n';
-        } 
-    };
-    return j;
-};
 

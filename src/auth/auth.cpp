@@ -191,7 +191,6 @@ void get_refresh_token(){
 
     std::string body_s = encode::map_ordered(body);
 
-
     // Post Request
 
     nlohmann::json response;
