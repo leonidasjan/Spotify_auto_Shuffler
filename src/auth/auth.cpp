@@ -5,7 +5,6 @@
 #include "httpserver.hpp"
 #include "rand_str.hpp"
 #include "check_config.hpp"
-
 #include "tobiaslocker/base64.hpp"
 
 #include <iostream>
@@ -29,13 +28,13 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
     const string Redirect_URI = "http://127.0.0.1:54789/callback";
     if (ClientID == "" || ClientSecret == "" || state == "")
     {
-        log_in_un_authenticated();
+        log_in_un_authenticated(state);
         std::cout << "Please try again \n";
     } else {
 
-        write( "ClientID", ClientID, "config");
-        write( "ClientSecret", ClientSecret, "config");
-        write( "Scope", scope, "config");
+        write( "ClientID", ClientID, "auth");
+        write( "ClientSecret", ClientSecret, "auth");
+        write( "Scope", scope, "auth");
 
         std::cout << "Opening up browser...\n"; 
         std::map<string,string> m =
@@ -55,27 +54,30 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
 
         std::mutex mut;
         std::unique_lock<std::mutex> lk(mut);
-        nlohmann::json j = read("config");
+        nlohmann::json j = read("auth");
         string code = j["Code"];
         std::cout << "Waiting for code ...\n";  
         while(code == std::string("None"))                                   
         {
             lk.unlock();
-            j = read("config");
+            j = read("auth");
             code = j["Code"];      
             std::this_thread::sleep_for(std::chrono::milliseconds(100));   
             lk.lock();       
         }
-        
-        std::thread clientThread(get_access_token);
-        if (clientThread.joinable()){clientThread.join();};
+        lk.unlock();
+        // std::thread clientThread(get_access_token);
+        // if (clientThread.joinable()){
+        //     clientThread.join();
+        // } else {std::cout << "Cant join client thread\n";};
+        get_access_token();
     };
 };
 void get_access_token(){
 
     SSL_library_init(); // dont touch that
 
-    nlohmann::json j = read("config");
+    nlohmann::json j = read("auth");
     
     //Client info
 
@@ -118,13 +120,13 @@ void get_access_token(){
                 response = nlohmann::json::parse(html_res->body);
                 if(response.contains("access_token")){
 
-                    write("AccessToken",response["access_token"],"config");
+                    write("AccessToken",response["access_token"],"auth");
                     std::cout << "Refreshed: Access Token!\n";
                 };
 
                 if(response.contains("refresh_token")){
 
-                    write("ResponseToken",response["response_token"],"config");
+                    write("RefreshToken",response["refresh_token"],"auth");
                     std::cout << "Refreshed: Refresh Token!\n";
                 };
 
@@ -166,7 +168,7 @@ void get_access_token(){
 };
 
 void get_refresh_token(){
-    nlohmann::json j = read("config");
+    nlohmann::json j = read("auth");
 
     //Client info
 
@@ -206,14 +208,11 @@ void get_refresh_token(){
                 response = nlohmann::json::parse(html_res->body);
 
                 if(response.contains("access_token")){
-
-                     write("AccessToken",response["access_token"],"config");
+                     write("AccessToken",response["access_token"],"auth");
                      std::cout << "Refreshed: Access Token!\n";
                 };
-
                 if(response.contains("refresh_token")){
-
-                    write("ResponseToken",response["response_token"],"config");
+                    write("RefreshToken",response["refresh_token"],"auth");
                     std::cout << "Refreshed: Refresh Token!\n";
                 };
                 

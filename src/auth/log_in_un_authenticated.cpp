@@ -4,21 +4,23 @@
 #include <thread>
 #include "auth.hpp"
 #include "check_config.hpp"
-#include "httpserver.hpp"
-#include "rand_str.hpp"
 
-void log_in_un_authenticated(){
+
+void log_in_un_authenticated(std::string state){
     using std::cout , std::cin, std::string;
 
-    string state = randomStrGen(16);
-    std::jthread serverThread(serverHTML,state);
+
 
     string ClientID = "None";
     string ClientSecret = "None";
     const string dev_uri = "https://developer.spotify.com/dashboard";
 
 
+    cout << "====================================\n";
+
     cout << "First of all, You need to log in to Your Spotify Account and create an app\n\n";
+
+    cout << "Opening up browser...\n\n";
 
     // ShellExecute(0, 0, dev_uri.c_str(), 0, 0 , SW_SHOW );
     
@@ -42,11 +44,11 @@ void log_in_un_authenticated(){
 
         cout << "\n\nClick 'View Secret Key' and \n";
 
-        cout << "\n\n Copy the ==Client Secret== and paste it in here: ";
+        cout << "\n\nCopy the ==Client Secret== and paste it in here: ";
 
         cin >> ClientSecret;
 
-        cout << "\n\n Done! Now Authenticate in your browser.\n\n";
+        cout << "\n\nDone! Now Authenticate in your browser.\n\n";
         get_auth_code( ClientID, ClientSecret, state );
     }
 }

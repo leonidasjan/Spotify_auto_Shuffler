@@ -12,7 +12,7 @@ namespace req_api {
     nlohmann::json get(std::string url, std::string path){
         using std::string;
 
-        nlohmann::json j = read("config");
+        nlohmann::json j = read("auth");
         // Client info
 
 
@@ -106,7 +106,7 @@ namespace req_api {
 
     nlohmann::json post(std::string url, std::string path, std::map<std::string,std::string> body){
 
-        nlohmann::json j = read("config");
+        nlohmann::json j = read("auth");
         // Client info
 
         std::string clientid = j["ClientID"];

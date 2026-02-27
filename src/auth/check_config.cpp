@@ -38,9 +38,9 @@ void check_config_folders()
         make_folder("config",mainpath);
     }
 
-    // if ( !std::filesystem::exists( mainpath / "config" / "auth.json" )) {
-    //     make_json_file("auth",mainpath / "config");
-    // }
+    if ( !std::filesystem::exists( mainpath / "config" / "auth.json" )) {
+        make_json_file("auth",mainpath / "config");
+    }
 
     if ( !std::filesystem::exists( mainpath / "config" / "config.json" )) {
         make_json_file("config",mainpath / "config");

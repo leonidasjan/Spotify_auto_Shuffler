@@ -34,7 +34,7 @@ void serverHTML(std::string state){
       req_code = req.get_param_value("code");
       if      (req_code == "")     { res.set_content("Something went wrong, try again","text/plain");}
       else if (req_state != state) { res.set_content("State mismatch","text/plain");}
-      else { write( "Code", req_code, "config" ); }
+      else { write( "Code", req_code, "auth" ); }
       res.set_content("Approved, you can close this window now!","text/plain");
     };
 
