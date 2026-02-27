@@ -21,7 +21,7 @@ int main(){
     // need to check for access token
     std::mutex m;
     m.lock();
-    nlohmann::json j = read_config();
+    nlohmann::json j = read("config");
     m.unlock();
 
 
@@ -37,7 +37,7 @@ int main(){
     cout << "\nBack to main\n";
 
     nlohmann::json Profile_Data = req_api::get("api.spotify.com","/v1/me");
-    std::cout << Get_User_Profile_Data;
+    std::cout << Profile_Data;
 
 
     // Request shuffle data from server

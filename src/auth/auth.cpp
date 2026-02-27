@@ -33,9 +33,9 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         std::cout << "Please try again \n";
     } else {
 
-        write_to_config( "ClientID", ClientID );
-        write_to_config( "ClientSecret", ClientSecret );
-        write_to_config( "Scope", scope);
+        write( "ClientID", ClientID, "config");
+        write( "ClientSecret", ClientSecret, "config");
+        write( "Scope", scope, "config");
 
         std::cout << "Opening up browser...\n"; 
         std::map<string,string> m =
@@ -55,13 +55,13 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
 
         std::mutex mut;
         std::unique_lock<std::mutex> lk(mut);
-        nlohmann::json j = read_config();
+        nlohmann::json j = read("config");
         string code = j["Code"];
         std::cout << "Waiting for code ...\n";  
         while(code == std::string("None"))                                   
         {
             lk.unlock();
-            j = read_config();
+            j = read("config");
             code = j["Code"];      
             std::this_thread::sleep_for(std::chrono::milliseconds(100));   
             lk.lock();       
@@ -75,7 +75,7 @@ void get_access_token(){
 
     SSL_library_init(); // dont touch that
 
-    nlohmann::json j = read_config();
+    nlohmann::json j = read("config");
     
     //Client info
 
@@ -118,14 +118,14 @@ void get_access_token(){
                 response = nlohmann::json::parse(html_res->body);
                 if(response.contains("access_token")){
 
-                     write_to_config("AccessToken",response["access_token"]);
-                     std::cout << "Obtained: Access Token!\n";
+                    write("AccessToken",response["access_token"],"config");
+                    std::cout << "Refreshed: Access Token!\n";
                 };
 
                 if(response.contains("refresh_token")){
 
-                    write_to_config("RefreshToken",response["refresh_token"]);
-                    std::cout << "Obtained: Refresh Token!\n";
+                    write("ResponseToken",response["response_token"],"config");
+                    std::cout << "Refreshed: Refresh Token!\n";
                 };
 
             break;
@@ -166,7 +166,7 @@ void get_access_token(){
 };
 
 void get_refresh_token(){
-    nlohmann::json j = read_config();
+    nlohmann::json j = read("config");
 
     //Client info
 
@@ -207,13 +207,13 @@ void get_refresh_token(){
 
                 if(response.contains("access_token")){
 
-                     write_to_config("AccessToken",response["access_token"]);
+                     write("AccessToken",response["access_token"],"config");
                      std::cout << "Refreshed: Access Token!\n";
                 };
 
                 if(response.contains("refresh_token")){
 
-                    write_to_config("RefreshToken",response["refresh_token"]);
+                    write("ResponseToken",response["response_token"],"config");
                     std::cout << "Refreshed: Refresh Token!\n";
                 };
                 

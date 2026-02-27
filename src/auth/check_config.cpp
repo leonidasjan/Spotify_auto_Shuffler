@@ -16,9 +16,10 @@ void make_folder(std::string folder="New Folder", std::filesystem::path envpath=
 
 void make_json_file(std::string name="config.json", std::filesystem::path envpath=get_main_path());
 
-void write_to_config();
+nlohmann::json read(const std::string name);
 
-nlohmann::json read_config();
+void write(const std::string key, const std::string pair, const std::string name);
+
 
 
 
@@ -84,11 +85,12 @@ void make_folder(std::string folder , std::filesystem::path envpath){
     }
 }
 
-void make_json_file(std::string name,std::filesystem::path path){
+void make_json_file( std::string name, std::filesystem::path path){
     using json = nlohmann::json;
     try
     {
-        path /= name+".json";
+        name+=".json";
+        path /= name;
         std::ofstream file(path);
         // write default keys
         json j = {
@@ -128,10 +130,11 @@ void make_json_file(std::string name,std::filesystem::path path){
 }
 
 
-nlohmann::json read_config(){
+nlohmann::json read( std::string name){
     using std::filesystem::path; using json = nlohmann::json;
     auto mainpath = get_main_path();
-    path filePath = mainpath / "config" / "config.json";
+    name+=".json";
+    path filePath = mainpath / "config" / name;
     json j;
     if ( std::filesystem::exists( filePath )) {
         std::ifstream fileI(filePath);
@@ -144,16 +147,18 @@ nlohmann::json read_config(){
             std::cerr << '\n' << "Json error: "<< e.what() << '\n';
         } 
     };
+
     return j;
 };
 
 
-void write_to_config(std::string key, std::string pair){
+void write(const std::string key, const std::string pair, std::string name){
     using std::filesystem::path; using json = nlohmann::json;
     
     auto mainpath = get_main_path();
 
-    path filePath = mainpath / "config" / "config.json";
+    name+=".json";
+    path filePath = mainpath / "config" / name;
 
     if ( std::filesystem::exists( filePath )) {
 
@@ -164,27 +169,18 @@ void write_to_config(std::string key, std::string pair){
             
             fileI >> j;
             fileI.close();
+            std::ofstream fileO(filePath);
+            j[key] = pair;
+            fileO << j.dump(4);
+            fileO.close();
+
         }
-        catch(json::parse_error& e)
+        catch(json::other_error& e)
         {
             std::cerr << '\n' << "Json error: "<< e.what() << '\n';
         }
         
-        if(j.contains(key)) {
-            try
-            {
-                std::ofstream fileO(filePath);
-                j[key] = pair;
-                fileO << j.dump(4);
-                fileO.close();
-            }
-            catch(json::parse_error& e)
-            {
-                std::cerr << '\n' << "Json error: "<< e.what() << '\n';
-            }
-            
-        }
-    } else {std::cerr << " This path doesnt exist?? " << filePath ;}
+    } else {std::cerr << " This path doesnt exist?? " << filePath << '\n';}
     
 }
 
