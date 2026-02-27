@@ -127,6 +127,7 @@ void make_json_file(std::string name,std::filesystem::path path){
     }
 }
 
+
 nlohmann::json read_config(){
     using std::filesystem::path; using json = nlohmann::json;
     auto mainpath = get_main_path();

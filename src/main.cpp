@@ -36,7 +36,7 @@ int main(){
 
     cout << "\nBack to main\n";
 
-    nlohmann::json Get_User_Profile_Data = req_api::get("api.spotify.com","/v1/me");
+    nlohmann::json Profile_Data = req_api::get("api.spotify.com","/v1/me");
     std::cout << Get_User_Profile_Data;
 
 
