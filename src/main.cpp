@@ -30,8 +30,11 @@ int main(){
     nlohmann::json j = read("auth");
     m.unlock();
 
+
+    std::cout << "this works";
     //TODO: refracture this if statement
-    if (j["ClientID"] == "None" || j["ClientSecret"] == "None" || j["AccessToken"] == "None" || j.is_string()) {
+    // j["ClientID"] == "None" || j["ClientSecret"] == "None" || j["AccessToken"] == "None" || j.is_string();
+    if (j.is_null()) {
         // user needs access token to continue, start auth proccess
         log_in_un_authenticated(state); 
     } else {
@@ -44,7 +47,7 @@ int main(){
     nlohmann::json Profile_Data = req_api::get("api.spotify.com","/v1/me");
 
     std::cout << "====================================\n";
-    std::cout << "\nHello " << Profile_Data["display_name"] << "!\n";
+    std::cout << "\nHello " << Profile_Data.value("display_name","") << "!\n";    
 
 
     // Request shuffle data from server

@@ -93,14 +93,7 @@ void make_json_file( std::string name, std::filesystem::path path){
         path /= name;
         std::ofstream file(path);
         // write default keys
-        json j = {
-            {"ClientID","None"},
-            {"ClientSecret","None"},
-            {"AccessToken","None"},
-            {"RefreshToken","None"},
-            {"Scope","None"},
-            {"Code","None"}
-        };
+        json j;
         file << j.dump(4);
         file.close();
     }
@@ -116,14 +109,7 @@ void make_json_file( std::string name, std::filesystem::path path){
         std::cout << "File " << path << " did not create!! Error: ";
         std::ofstream file(path);
         // write default keys
-        json j = {
-            {"ClientID","None"},
-            {"ClientSecret","None"},
-            {"AccessToken","None"},
-            {"RefreshToken","None"},
-            {"Scope","None"},
-            {"Code","None"}
-        };
+        json j;
         file << j.dump(4);
         file.close();
     }

@@ -35,6 +35,7 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         write( "ClientID", ClientID, "auth");
         write( "ClientSecret", ClientSecret, "auth");
         write( "Scope", scope, "auth");
+        write( "Code" , "None", "auth");
 
         std::cout << "Opening up browser...\n"; 
         std::map<string,string> m =
