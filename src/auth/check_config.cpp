@@ -39,11 +39,11 @@ void check_config_folders()
     }
 
     if ( !std::filesystem::exists( mainpath / "config" / "auth.json" )) {
-        make_json_file("auth",mainpath / "config");
+        make_json_file("auth.json",mainpath / "config");
     }
 
-    if ( !std::filesystem::exists( mainpath / "config" / "config.json" )) {
-        make_json_file("config",mainpath / "config");
+    if ( !std::filesystem::exists( mainpath / "config" / "playlists.json" )) {
+        make_json_file("playlists.json",mainpath / "config");
     }
 }
 
@@ -84,12 +84,11 @@ void make_folder(std::string folder , std::filesystem::path envpath){
         cout << "something went wrong\n";
     }
 }
-
+// add .json at the end
 void make_json_file( std::string name, std::filesystem::path path){
     using json = nlohmann::json;
     try
     {
-        name+=".json";
         path /= name;
         std::ofstream file(path);
         // write default keys
@@ -130,7 +129,7 @@ nlohmann::json read( std::string name){
         }
         catch(json::parse_error& e)
         {
-            std::cerr << '\n' << "Json error: "<< e.what() << '\n';
+            std::cerr << '\n' << "Couldnt read file, Json error: "<< e.what() << '\n';
         } 
     };
 
@@ -146,28 +145,50 @@ void write(const std::string key, const std::string pair, std::string name){
     name+=".json";
     path filePath = mainpath / "config" / name;
 
-    if ( std::filesystem::exists( filePath )) {
-
+    if ( !std::filesystem::exists( filePath )) {
+        make_json_file(name, (mainpath / "config"));
+    };
+    try
+    {
         std::ifstream fileI(filePath);
         json j;
-        try
-        {
-            
-            fileI >> j;
-            fileI.close();
-            std::ofstream fileO(filePath);
-            j[key] = pair;
-            fileO << j.dump(4);
-            fileO.close();
+        fileI >> j;
+        fileI.close();
+        std::ofstream fileO(filePath);
+        j[key] = pair;
+        fileO << j.dump(4);
+        fileO.close();
 
-        }
-        catch(json::other_error& e)
-        {
-            std::cerr << '\n' << "Json error: "<< e.what() << '\n';
-        }
-        
-    } else {std::cerr << " This path doesnt exist?? " << filePath << '\n';}
-    
+    }
+    catch(json::other_error& e)
+    {
+        std::cerr << '\n' << "Json error: "<< e.what() << '\n';
+    }
 }
+
+void write(nlohmann::json &j, std::string name){
+    using std::filesystem::path; using json = nlohmann::json;
+    
+    auto mainpath = get_main_path();
+
+    name+=".json";
+    path filePath = mainpath / "config" / name;
+
+    if ( !std::filesystem::exists( filePath )) {
+        make_json_file(name, (mainpath / "config"));
+    };
+    try
+    {
+        std::ofstream fileO(filePath);
+        fileO << j.dump(4);
+        fileO.close();
+    }
+    catch(json::other_error& e)
+    {
+        std::cerr << '\n' << "Json error: "<< e.what() << '\n';
+    }
+
+
+};
 
 

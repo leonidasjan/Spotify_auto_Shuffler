@@ -50,7 +50,6 @@ namespace req_api {
                 case httplib::OK_200:
 
                     response = nlohmann::json::parse(html_res->body);
-
                 break;
                 
                 case httplib::BadRequest_400:
@@ -68,9 +67,23 @@ namespace req_api {
 
                 break;
 
+                case httplib::Forbidden_403:
+
+                    std::cerr << "Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here." << std::endl;
+                    std::cout << html_res -> body << '\n';
+
+                break;
+
                 case httplib::TooManyRequests_429:
 
                     std::cerr << "Error: TooManyRequests_429, The app has exceeded its rate limits!" << std::endl;
+
+                break;
+
+                case httplib::NotFound_404:
+                std::cerr << "Error: NotFound_404" << std::endl;
+                std::cout << html_res -> body << '\n';
+                std::cout << url+path << '\n';
 
                 break;
             }
@@ -82,8 +95,9 @@ namespace req_api {
 
             switch (err) {
                 case httplib::Error::SSLConnection:
-                    std::cout << "SSL connection failed, SSL error: "
-                            << html_res.ssl_error() << std::endl;
+
+                    std::cout << "SSL connection failed, SSL error: " << html_res.ssl_error() << std::endl;
+                    
                 break;
 
                 default:

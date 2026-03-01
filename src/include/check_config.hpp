@@ -12,5 +12,5 @@ void make_json_file(std::string name="config.json");
 
 nlohmann::json read(const std::string name);
 void write(const std::string key, const std::string pair, const std::string name);
-
+void write(nlohmann::json &j, std::string name);
 #endif

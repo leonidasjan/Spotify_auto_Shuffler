@@ -1,4 +1,0 @@
-#ifndef REQUEST_ALBUMS_HPP
-#define REQUEST_ALBUMS_HPP
-
-#endif
