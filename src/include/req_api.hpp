@@ -5,7 +5,16 @@
 #include <string>
 #include <map>
 namespace req_api{
+    ///@{
+      /**
+       *  @brief  Get Request.
+       *  @param  url Without https:// .
+       *  @param  path Full Path to the endpoiint.
+       *  @return  Body of response in JSON.
+       *
+       */
     nlohmann::json get(std::string url, std::string path);
+    ///@}
     nlohmann::json post(std::string url, std::map<std::string,std::string> body);
 }
 #endif

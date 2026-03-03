@@ -2,7 +2,12 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+
+#include <winsock2.h>
+#include <windows.h>
+
 #include <nlohmann/json.hpp>
+
 #include "get_vector.hpp"
 #include "shuffle_alg.hpp"
 #include "check_config.hpp"
@@ -15,6 +20,10 @@
 
 
 int main(){
+
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
     using std::cout, std::string;
 
     cout << "Welcome to Spotify Auto Shuffler. \n";

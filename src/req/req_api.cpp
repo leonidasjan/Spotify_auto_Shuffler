@@ -9,6 +9,14 @@
 
 
 namespace req_api {
+    ///@{
+      /**
+       *  @brief  Get Request.
+       *  @param  url Without https:// .
+       *  @param  path Full Path to the endpoiint.
+       *  @return  Body of response in JSON.
+       *
+       */
     nlohmann::json get(std::string url, std::string path){
         using std::string;
 
@@ -117,7 +125,7 @@ namespace req_api {
         };
         return response;
     };
-
+    ///@}
     nlohmann::json post(std::string url, std::string path, std::map<std::string,std::string> body){
 
         nlohmann::json j = read("auth");
