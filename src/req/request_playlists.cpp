@@ -48,17 +48,25 @@ void Get_Playlists_Items(){
 
     std::map<int,string> map_playlists;
 
+    int counter = 0;
     for (auto x : playlists["items"]){
         counter += 1;
         map_playlists.insert_or_assign(counter,x["name"]);
     }
 
-    if(pick > playlists.value("total", 0)) {
-        int temp = pick;
-        std::string pick = map_playlists.find(temp);
-        if (playlists.find(pick)){
-            
+
+    if(pick < playlists.value("total", 0)) {
+        auto pair = map_playlists.find(pick);
+        // s stands for selected
+        if (pair != map_playlists.end()){
+
+            std::string s_playlist = pair->second;
+            std::cout << "Selected playlist name: " << s_playlist << '\n';
+
+            // HREF LINK IN PLAYLISTS.JSON
         }
+
+        
     }
 
 }

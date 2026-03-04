@@ -55,7 +55,11 @@ int main(){
     write(Profile_Data,"profile_data");
 
     Get_Current_Users_Playlists();
+    Get_Playlists_Items();
     // Request shuffle data from server
+
+
+
 
 
     // Shuffle selected playlists
