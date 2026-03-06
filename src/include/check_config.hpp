@@ -11,6 +11,25 @@ void check_config_folders();
 void make_json_file(std::string name="config.json");
 
 nlohmann::json read(const std::string name);
+///@{
+/**
+ *  @brief  Write function to JSON
+ *  @param  key 
+ *  @param  pair
+ *  @param  name Without ".json"
+ *  @return  Written File
+ *
+ */
 void write(const std::string key, const std::string pair, const std::string name);
+///@}
+///@{
+/**
+ *  @brief  Write function to JSON
+ *  @param  j Json object
+ *  @param  name Without ".json"
+ *  @return Written File
+ *
+ */
 void write(nlohmann::json &j, std::string name);
+///@}
 #endif

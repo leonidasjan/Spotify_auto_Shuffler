@@ -54,7 +54,7 @@ void Get_Playlists_Items(){
         std::cout << "Cant pick " << pick << ", first playlist starts with 1 \n";
     } 
 
-    else if(pick < playlists.value("total", 0)) {
+    else if(pick <= playlists.value("total", 0)) {
         pick -= 1;
         playlist_url = playlists["items"][pick]["items"]["href"];
         std::cout << "Playlist Name: " << playlists["items"][pick]["name"] << '\n';
@@ -68,8 +68,18 @@ void Get_Playlists_Items(){
 
     // getting items starts here
     if (playlist_url != "None"){
-        nlohmann::json playlist_items = req_api::get(playlist_url);
-        write(playlist_items, playlist_items);
+        nlohmann::json playlist_items = req_api::get(playlist_url+"?market=PL&limit=50");
+        write(playlist_items, "playlist_items");
+        std::cout << "Written first, checking for next\n";
+        while(!playlist_items["next"].is_null()){
+            std::string next = playlist_items["next"];
+            std::cout << next << '\n';
+            playlist_items = req_api::get(next);
+            write(playlist_items, "playlist_items");
+            std::cout << "Written, lets wait 100 mili \n";
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        std::cout << "out of while\n";
     }
 
 }

@@ -164,10 +164,9 @@ namespace req_api {
         nlohmann::json response;
 
 
-        auto url = fullpath.substr(0,fullpath.find(".com") + 4);
         auto path = fullpath.substr(fullpath.find(".com") + 4);
 
-        httplib::SSLClient cli( url );
+        httplib::SSLClient cli( "api.spotify.com" , 443);
         if (auto html_res = cli.Get( path , headers )){
             const auto status = html_res->status;
 
@@ -209,7 +208,7 @@ namespace req_api {
                 case httplib::NotFound_404:
                 std::cerr << "Error: NotFound_404" << std::endl;
                 std::cout << html_res -> body << '\n';
-                std::cout << url+path << '\n';
+                std::cout << fullpath << '\n';
 
                 break;
             }
@@ -241,6 +240,7 @@ namespace req_api {
         if (cli.is_socket_open()){
             std::cout << "Socket is still open!!!!!  might crash\n";
         };
+        if (response.is_null()){response = "Error";};
         return response;
     };
 
