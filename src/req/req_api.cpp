@@ -129,8 +129,7 @@ namespace req_api {
     ///@{
       /**
        *  @brief  Get Request.
-       *  @param  url Without https:// .
-       *  @param  path Full Path to the endpoiint.
+       *  @param  fullpath With https:// .
        *  @return  Body of response in JSON.
        *
        */
@@ -167,7 +166,7 @@ namespace req_api {
 
         auto url = fullpath.substr(0,fullpath.find(".com") + 4);
         auto path = fullpath.substr(fullpath.find(".com") + 4);
-        
+
         httplib::SSLClient cli( url );
         if (auto html_res = cli.Get( path , headers )){
             const auto status = html_res->status;

@@ -15,6 +15,15 @@ namespace req_api{
        */
     nlohmann::json get(std::string url, std::string path);
     ///@}
+    ///@{
+    /**
+     *  @brief  Get Request.
+     *  @param  fullpath With https:// .
+     *  @return  Body of response in JSON.
+     *
+     */
+    nlohmann::json get(std::string fullpath);
+    ///@}
     nlohmann::json post(std::string url, std::map<std::string,std::string> body);
 }
 #endif

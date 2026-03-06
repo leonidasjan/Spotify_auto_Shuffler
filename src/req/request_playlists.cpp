@@ -44,7 +44,7 @@ void Get_Playlists_Items(){
     // we need playlist ID in order to get the items
     nlohmann::json playlists = read("playlists");
 
-    std::string playlist_url;
+    std::string playlist_url = "None";
     int pick = 0;
 
     std::cout << "Pick a number between 1-" << playlists.value("total", 0) << " : ";
@@ -59,14 +59,17 @@ void Get_Playlists_Items(){
         playlist_url = playlists["items"][pick]["items"]["href"];
         std::cout << "Playlist Name: " << playlists["items"][pick]["name"] << '\n';
         std::cout << "Total Songs in this playlist: " << playlists["items"][pick]["items"].value("total", 0) << '\n';
-        
     }
 
     else {
 
         std::cout << "Playlist with id " << pick << "doesnt exist \n";
-
     }
 
     // getting items starts here
+    if (playlist_url != "None"){
+        nlohmann::json playlist_items = req_api::get(playlist_url);
+        write(playlist_items, playlist_items);
+    }
+
 }
