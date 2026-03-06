@@ -40,33 +40,33 @@ void Get_Current_Users_Playlists(){
 }
 
 void Get_Playlists_Items(){
+
+    // we need playlist ID in order to get the items
     nlohmann::json playlists = read("playlists");
+
+    std::string playlist_url;
     int pick = 0;
 
-    std::cout << "Pick a number between 1-" << playlists.value("total", 0) << "    : \n";
+    std::cout << "Pick a number between 1-" << playlists.value("total", 0) << " : ";
     std::cin >> pick;
 
-    std::map<int,string> map_playlists;
+    if (pick == 0){
+        std::cout << "Cant pick " << pick << ", first playlist starts with 1 \n";
+    } 
 
-    int counter = 0;
-    for (auto x : playlists["items"]){
-        counter += 1;
-        map_playlists.insert_or_assign(counter,x["name"]);
-    }
-
-
-    if(pick < playlists.value("total", 0)) {
-        auto pair = map_playlists.find(pick);
-        // s stands for selected
-        if (pair != map_playlists.end()){
-
-            std::string s_playlist = pair->second;
-            std::cout << "Selected playlist name: " << s_playlist << '\n';
-
-            // HREF LINK IN PLAYLISTS.JSON
-        }
-
+    else if(pick < playlists.value("total", 0)) {
+        pick -= 1;
+        playlist_url = playlists["items"][pick]["items"]["href"];
+        std::cout << "Playlist Name: " << playlists["items"][pick]["name"] << '\n';
+        std::cout << "Total Songs in this playlist: " << playlists["items"][pick]["items"].value("total", 0) << '\n';
         
     }
 
+    else {
+
+        std::cout << "Playlist with id " << pick << "doesnt exist \n";
+
+    }
+
+    // getting items starts here
 }

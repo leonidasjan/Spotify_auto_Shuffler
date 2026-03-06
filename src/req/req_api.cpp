@@ -126,6 +126,127 @@ namespace req_api {
         return response;
     };
     ///@}
+    ///@{
+      /**
+       *  @brief  Get Request.
+       *  @param  url Without https:// .
+       *  @param  path Full Path to the endpoiint.
+       *  @return  Body of response in JSON.
+       *
+       */
+    nlohmann::json get(std::string fullpath){
+        using std::string;
+
+        nlohmann::json j = read("auth");
+        // Client info
+
+
+        std::string auth = j["AccessToken"];
+        
+
+        //Headers
+
+        httplib::Headers headers = {
+            {"Authorization", "Bearer " + auth}
+        };
+        
+        // //Body
+
+        // std::map<string,string> body =
+        // {{"1grant_type","authorization_code"},
+        // {"2redirect_uri","http://127.0.0.1:54789/callback"},
+        // {"3code",req_code}};
+
+        // std::string body_s = encode::map_ordered(body);
+
+
+        // Post request
+
+        nlohmann::json response;
+
+
+        auto url = fullpath.substr(0,fullpath.find(".com") + 4);
+        auto path = fullpath.substr(fullpath.find(".com") + 4);
+        
+        httplib::SSLClient cli( url );
+        if (auto html_res = cli.Get( path , headers )){
+            const auto status = html_res->status;
+
+            switch (status) {
+
+                case httplib::OK_200:
+
+                    response = nlohmann::json::parse(html_res->body);
+                break;
+                
+                case httplib::BadRequest_400:
+
+                    std::cout << "\nSomething went wrong\n";
+                    std::cout << html_res->body;
+
+                break;
+
+                case httplib::Unauthorized_401:
+
+                    std::cerr << "Error: Unauthorized_401, refreshing access token!" << std::endl;
+                    std::cout << html_res -> body << '\n';
+                    get_refresh_token();
+
+                break;
+
+                case httplib::Forbidden_403:
+
+                    std::cerr << "Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here." << std::endl;
+                    std::cout << html_res -> body << '\n';
+
+                break;
+
+                case httplib::TooManyRequests_429:
+
+                    std::cerr << "Error: TooManyRequests_429, The app has exceeded its rate limits!" << std::endl;
+
+                break;
+
+                case httplib::NotFound_404:
+                std::cerr << "Error: NotFound_404" << std::endl;
+                std::cout << html_res -> body << '\n';
+                std::cout << url+path << '\n';
+
+                break;
+            }
+
+        } else {
+            std::cout << "\nopa an error\n";
+            // Check the error type
+            const auto err = html_res.error();
+
+            switch (err) {
+                case httplib::Error::SSLConnection:
+
+                    std::cout << "SSL connection failed, SSL error: " << html_res.ssl_error() << std::endl;
+                    
+                break;
+
+                default:
+                    std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+            };
+        };
+
+        
+        if (cli.is_socket_open()){
+            std::cout << "Socket is still open before cli.stop()\n";
+        };
+
+        cli.stop();
+
+        if (cli.is_socket_open()){
+            std::cout << "Socket is still open!!!!!  might crash\n";
+        };
+        return response;
+    };
+
+    ///@}
+
     nlohmann::json post(std::string url, std::string path, std::map<std::string,std::string> body){
 
         nlohmann::json j = read("auth");
