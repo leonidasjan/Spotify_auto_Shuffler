@@ -74,13 +74,16 @@ void Get_Playlists_Items(){
         write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
 
         while(!playlist_items["next"].is_null()){
+            if (playlist_items["status"] == httplib::TooManyRequests_429){
+                std::cout << "Sleeping for 15 seconds, error: TooManyRequests_429";
+                std::this_thread::sleep_for(std::chrono::seconds(15));
+            }
             auto new_req = req_api::get(playlist_items["next"]);
 
             playlist_items["next"] = new_req["next"];
             playlist_items["items"] += new_req["items"];
 
-                write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
-
+            write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
         };
 
         std::cout << "Updated: " << playlists["items"][pick].value("name","Unknown")+"_items.json\n";
