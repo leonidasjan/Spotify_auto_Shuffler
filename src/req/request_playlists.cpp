@@ -59,6 +59,7 @@ void Get_Playlists_Items(){
         playlist_url = playlists["items"][pick]["items"]["href"];
         std::cout << "Playlist Name: " << playlists["items"][pick]["name"] << '\n';
         std::cout << "Total Songs in this playlist: " << playlists["items"][pick]["items"].value("total", 0) << '\n';
+        std::cout << "\nFetching data ... \n\n";
     }
 
     else {
@@ -68,18 +69,21 @@ void Get_Playlists_Items(){
 
     // getting items starts here
     if (playlist_url != "None"){
+
         nlohmann::json playlist_items = req_api::get(playlist_url+"?market=PL&limit=50");
-        write(playlist_items, "playlist_items");
-        std::cout << "Written first, checking for next\n";
+        write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
+
         while(!playlist_items["next"].is_null()){
-            std::string next = playlist_items["next"];
-            std::cout << next << '\n';
-            playlist_items = req_api::get(next);
-            write(playlist_items, "playlist_items");
-            std::cout << "Written, lets wait 100 mili \n";
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-        std::cout << "out of while\n";
+            auto new_req = req_api::get(playlist_items["next"]);
+
+            playlist_items["next"] = new_req["next"];
+            playlist_items["items"] += new_req["items"];
+
+                write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
+
+        };
+
+        std::cout << "Updated: " << playlists["items"][pick].value("name","Unknown")+"_items.json\n";
     }
 
 }
