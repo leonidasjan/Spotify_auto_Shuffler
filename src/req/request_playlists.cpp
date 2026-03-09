@@ -48,9 +48,9 @@ void Get_Playlists_Items(){
 
 
     // Reading anything from that 67MB File is insanely slow, find a faster way to read from it, maybe save only the data that you need.
-    nlohmann::json tr = read("6_items");
-    std::cout << "done";
-    std::cout << tr["items"][0]["item"]["album"]["name"];
+    // nlohmann::json tr = read("6_items");
+    // std::cout << "done";
+    // std::cout << tr["items"][0]["item"]["album"]["name"];
 
     std::string playlist_url = "None";
     int pick = 0;
@@ -88,21 +88,32 @@ void Get_Playlists_Items(){
             }
 
             std::cout << "\rFetching data ... " << counter <<'/'<< playlists["items"][pick]["items"].value("total", 0);
-            
-            counter +=50;
             auto new_req = req_api::get(playlist_items["next"]);
+            nlohmann::json new_data;
+
+            for (auto item : new_req["items"]){
+                new_data["items"].push_back({
+                    {"img", item["item"]["album"]["images"][1].value("url","None")},
+                    {"album_url", item["item"]["album"]["images"][1].value("url","None")},
+                    {"artist_name", item["item"]["artists"][0].value("name","None")},
+                    {"added_at", item.value("added_at","None")}
+                });
+            }
+            counter +=50;
+
+            for (auto item : new_data["items"]){
+                playlist_items["items"] += item;
+            }
 
             playlist_items["next"] = new_req["next"];
-            playlist_items["items"] += new_req["items"];
 
-            write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
         };
-        std::cout << "\rFetching data ... " 
-        << playlists["items"][pick]["items"].value("total", 0) <<'/'
-        << playlists["items"][pick]["items"].value("total", 0) <<" Done!\n";
+        
+        write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
 
-        std::cout << "Updated: " << playlists["items"][pick].value("name","Unknown")+"_items.json\n";
-    }
+    };
+    std::cout << "\rFetching data ... " << playlists["items"][pick]["items"].value("total", 0) <<'/'<< playlists["items"][pick]["items"].value("total", 0) << '\n';
+    std::cout << "Updated: " << playlists["items"][pick].value("name","Unknown")+"_items.json\n";
 
 
-}
+};
