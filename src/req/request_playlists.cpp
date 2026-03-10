@@ -44,14 +44,6 @@ void Get_Playlists_Items(){
     // we need playlist ID in order to get the items
     nlohmann::json playlists = read("playlists");
 
-
-
-
-    // Reading anything from that 67MB File is insanely slow, find a faster way to read from it, maybe save only the data that you need.
-    // nlohmann::json tr = read("6_items");
-    // std::cout << "done";
-    // std::cout << tr["items"][0]["item"]["album"]["name"];
-
     std::string playlist_url = "None";
     int pick = 0;
 
@@ -77,9 +69,28 @@ void Get_Playlists_Items(){
     // getting items starts here
     if (playlist_url != "None"){
 
-        nlohmann::json playlist_items = req_api::get(playlist_url+"?market=PL&limit=50");
-        write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
-        size_t counter = 50;
+        nlohmann::json playlist_items;
+        nlohmann::json new_req = req_api::get(playlist_url+"?market=PL&limit=50");
+
+        playlist_items["next"] = new_req["next"];
+        playlist_items["status"] = new_req["status"];
+
+        for (auto item : new_req["items"]){
+                
+                nlohmann::json new_data;
+                new_data["items"].push_back({
+                    {"img", item["item"]["album"]["images"][1]["url"]},
+                    {"name", item["item"]["name"]},
+                    {"album_url", item["item"]["album"]["images"][1]["url"]},
+                    {"artist_name", item["item"]["artists"][0]["name"]},
+                    {"added_at", item["added_at"]}
+                });
+
+                playlist_items["items"] += new_data["items"].back();
+        };
+        
+        write(playlist_items, "playlists//"+playlists["items"][pick].value("name","Unknown")+"_items");
+
         while(!playlist_items["next"].is_null()){
             
             if (playlist_items["status"] == httplib::TooManyRequests_429){
@@ -87,29 +98,29 @@ void Get_Playlists_Items(){
                 std::this_thread::sleep_for(std::chrono::seconds(15));
             }
 
-            std::cout << "\rFetching data ... " << counter <<'/'<< playlists["items"][pick]["items"].value("total", 0);
+            std::cout << "\rFetching data ... " << playlist_items["items"].size() <<'/'<< playlists["items"][pick]["items"].value("total", 0);
+
             auto new_req = req_api::get(playlist_items["next"]);
-            nlohmann::json new_data;
 
             for (auto item : new_req["items"]){
+                
+                nlohmann::json new_data;
                 new_data["items"].push_back({
-                    {"img", item["item"]["album"]["images"][1].value("url","None")},
-                    {"album_url", item["item"]["album"]["images"][1].value("url","None")},
-                    {"artist_name", item["item"]["artists"][0].value("name","None")},
-                    {"added_at", item.value("added_at","None")}
+                    {"img", item["item"]["album"]["images"][1]["url"]},
+                    {"name", item["item"]["name"]},
+                    {"album_url", item["item"]["album"]["images"][1]["url"]},
+                    {"artist_name", item["item"]["artists"][0]["name"]},
+                    {"added_at", item["added_at"]}
                 });
-            }
-            counter +=50;
 
-            for (auto item : new_data["items"]){
-                playlist_items["items"] += item;
-            }
+                playlist_items["items"] += new_data["items"].back();
+            };
 
             playlist_items["next"] = new_req["next"];
 
         };
         
-        write(playlist_items, playlists["items"][pick].value("name","Unknown")+"_items");
+        write(playlist_items, "playlists//"+playlists["items"][pick].value("name","Unknown")+"_items");
 
     };
     std::cout << "\rFetching data ... " << playlists["items"][pick]["items"].value("total", 0) <<'/'<< playlists["items"][pick]["items"].value("total", 0) << '\n';

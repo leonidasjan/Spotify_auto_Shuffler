@@ -34,9 +34,15 @@ void check_config_folders()
         make_folder("Spotify Auto Shuffler",getEnvironmentVariable("LOCALAPPDATA"));
     }
 
+   
     if ( !std::filesystem::exists( mainpath / "config" )) {
         make_folder("config",mainpath);
     }
+
+    if ( !std::filesystem::exists( mainpath / "playlists" )) {
+        make_folder("playlists",mainpath / "config");
+    }
+
 
     if ( !std::filesystem::exists( mainpath / "config" / "auth.json" )) {
         make_json_file("auth.json",mainpath / "config");
@@ -109,6 +115,7 @@ void make_json_file( std::string name, std::filesystem::path path){
         std::ofstream file(path);
         // write default keys
         json j;
+        j["created"] = true;
         file << j.dump(4);
         file.close();
     }
@@ -146,7 +153,7 @@ void write(const std::string key, const std::string pair, std::string name){
     path filePath = mainpath / "config" / name;
 
     if ( !std::filesystem::exists( filePath )) {
-        make_json_file(name, (mainpath / "config"));
+        make_json_file(name, mainpath / "config");
     };
     try
     {

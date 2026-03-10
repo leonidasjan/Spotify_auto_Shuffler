@@ -31,11 +31,11 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         log_in_un_authenticated(state);
         std::cout << "Please try again \n";
     } else {
-
-        write( "ClientID", ClientID, "auth");
-        write( "ClientSecret", ClientSecret, "auth");
-        write( "Scope", scope, "auth");
-        write( "Code" , "None", "auth");
+        std::cout << "So far, so good\n";
+        write( "ClientID", ClientID, "auth" );
+        write( "ClientSecret", ClientSecret, "auth" );
+        write( "Scope", scope, "auth" );
+        write( "Code" , "None", "auth" );
 
         std::cout << "Opening up browser...\n"; 
         std::map<string,string> m =
