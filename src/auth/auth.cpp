@@ -5,6 +5,8 @@
 #include "httpserver.hpp"
 #include "rand_str.hpp"
 #include "check_config.hpp"
+#include "req_api.hpp"
+
 #include "tobiaslocker/base64.hpp"
 
 #include <iostream>
@@ -76,181 +78,31 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
 void get_access_token(){
 
     SSL_library_init(); // dont touch that
-
-    nlohmann::json j = read("auth");
+    auto j = read("auth");
+    std::string client = j["ClientID"];
     
-    //Client info
-
-    std::string clientid = j["ClientID"];
-    std::string clientsecret = j["ClientSecret"];
-    std::string auth = clientid+":"+clientsecret;
-    std::string req_code = j["Code"];
-    
-
-    //Headers
-
-    httplib::Headers headers = {
-        {"Authorization", "Basic " + base64::to_base64(auth)}
-    };
-    
-    //Body
-
     std::map<string,string> body =
     {{"1grant_type","authorization_code"},
     {"2redirect_uri","http://127.0.0.1:54789/callback"},
-    {"3code",req_code}};
+    {"3code",client}};
+    
+    req_api::post("accounts.spotify.com","/api/token",body);
 
-    std::string body_s = encode::map_ordered(body);
-
-
-    // Post request
-
-    nlohmann::json response;
-
-
-
-    httplib::SSLClient cli("accounts.spotify.com", 443);
-    if (auto html_res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")){
-        const auto status = html_res->status;
-
-        switch (status) {
-
-            case httplib::OK_200:
-
-                response = nlohmann::json::parse(html_res->body);
-                if(response.contains("access_token")){
-
-                    write("AccessToken",response["access_token"],"auth");
-                    std::cout << "Refreshed: Access Token!\n";
-                };
-
-                if(response.contains("refresh_token")){
-
-                    write("RefreshToken",response["refresh_token"],"auth");
-                    std::cout << "Refreshed: Refresh Token!\n";
-                };
-
-            break;
-            
-            case httplib::BadRequest_400:
-
-                std::cout << "\nSomething went wrong\n";
-                std::cout << html_res->body;
-            break;
-        }
-
-    } else {
-        std::cout << "\nopa an error\n";
-        // Check the error type
-        const auto err = html_res.error();
-
-        switch (err) {
-            case httplib::Error::SSLConnection:
-                std::cout << "SSL connection failed, SSL error: "
-                        << html_res.ssl_error() << std::endl;
-            break;
-
-            default:
-                std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
-        };
-    };
-
-    if (cli.is_socket_open()){
-        std::cout << "Socket is still open before cli.stop()\n";
-    };
-
-    cli.stop();
-
-    if (cli.is_socket_open()){
-        std::cout << "Socket is still open!!!!!  might crash\n";
-    };
 
 };
 
 void get_refresh_token(){
-    nlohmann::json j = read("auth");
 
-    //Client info
+    auto j = read("auth");
 
-    std::string clientid = j["ClientID"];
-    std::string clientsecret = j["ClientSecret"];
-    std::string auth = clientid+":"+clientsecret;
-    
-
-    //Headers
-
-    httplib::Headers headers = {
-        {"Authorization", "Basic " + base64::to_base64(auth)}
-    };
-
-
-    //Body
+    std::string client = j["ClientID"];
 
     std::map<string,string> body =
     {{"1grant_type","refresh_token"},
     {"2refresh_token",j["RefreshToken"]},
-    {"3client_id",clientid}};
+    {"3client_id",client}};
 
-    std::string body_s = encode::map_ordered(body);
-
-    // Post Request
-
-    nlohmann::json response;
-    
-    httplib::SSLClient cli("accounts.spotify.com", 443);
-    if (auto html_res = cli.Post("/api/token", headers, body_s, "application/x-www-form-urlencoded")){
-        const auto status = html_res->status;
-
-        switch (status) {
-
-            case httplib::OK_200:
-
-                response = nlohmann::json::parse(html_res->body);
-
-                if(response.contains("access_token")){
-                     write("AccessToken",response["access_token"],"auth");
-                     std::cout << "Refreshed: Access Token!\n";
-                };
-                if(response.contains("refresh_token")){
-                    write("RefreshToken",response["refresh_token"],"auth");
-                    std::cout << "Refreshed: Refresh Token!\n";
-                };
-                
-
-            break;
-            
-            case httplib::BadRequest_400:
-
-                std::cout << "\nSomething went wrong\n";
-                std::cout << html_res->body;
-            break;
-        }
-
-    } else {
-        std::cout << "\nopa an error\n";
-        // Check the error type
-        const auto err = html_res.error();
-
-        switch (err) {
-            case httplib::Error::SSLConnection:
-                std::cout << "SSL connection failed, SSL error: "
-                        << html_res.ssl_error() << std::endl;
-            break;
-
-            default:
-                std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
-        };
-    };
-
-    if (cli.is_socket_open()){
-        std::cout << "Socket is still open before cli.stop()\n";
-    };
-
-    cli.stop();
-
-    if (cli.is_socket_open()){
-        std::cout << "Socket is still open!!!!!  might crash\n";
-    };
+    req_api::post("accounts.spotify.com","/api/token",body);
 
 };
 

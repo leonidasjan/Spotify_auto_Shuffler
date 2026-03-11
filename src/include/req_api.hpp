@@ -1,6 +1,6 @@
-#include "yhirose/httplib.h"
 #ifndef REQ_API_HPP
 #define REQ_API_HPP
+#include "yhirose/httplib.h"
 #include "nlohmann/json.hpp"
 #include <string>
 #include <map>
@@ -24,6 +24,15 @@ namespace req_api{
      */
     nlohmann::json get(std::string fullpath);
     ///@}
-    nlohmann::json post(std::string url, std::map<std::string,std::string> body);
+    ///@{
+    /**
+     *  @brief  Put Request.
+     *  @param  url Without https:// .
+     *  @param  body < std::string , std::string >
+     *  @return  Body of response in JSON.
+     *
+     */
+    nlohmann::json post(std::string url, std::string path ,std::map<std::string,std::string> body);
+    ///@}
 }
 #endif

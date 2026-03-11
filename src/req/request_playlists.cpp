@@ -58,7 +58,8 @@ void Get_Playlists_Items(){
         pick -= 1;
         playlist_url = playlists["items"][pick]["items"]["href"];
         std::cout << "Playlist Name: " << playlists["items"][pick]["name"] << '\n';
-        std::cout << "Total Songs in this playlist: " << playlists["items"][pick]["items"].value("total", 0) << '\n';
+        std::cout << "Total Songs in this playlist: " << playlists["items"][pick]["items"]["total"] << '\n';
+        write("selected_playlist_id",playlists["items"][pick]["id"], "playlists");
     }
 
     else {
