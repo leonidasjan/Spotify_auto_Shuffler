@@ -39,7 +39,7 @@ void check_config_folders()
         make_folder("config",mainpath);
     }
 
-    if ( !std::filesystem::exists( mainpath / "playlists" )) {
+    if ( !std::filesystem::exists( mainpath / "config" / "playlists" )) {
         make_folder("playlists",mainpath / "config");
     }
 

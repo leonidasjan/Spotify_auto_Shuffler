@@ -24,14 +24,13 @@ using std::string;
 void get_access_token();
 
 void get_auth_code(string ClientID, string ClientSecret, string state){
-    string scope = "user-library-read user-library-modify playlist-read-private";
+    string scope = "playlist-read-private playlist-modify-private playlist-modify-public";
     const string Redirect_URI = "http://127.0.0.1:54789/callback";
     if (ClientID == "" || ClientSecret == "" || state == "")
     {
         log_in_un_authenticated(state);
         std::cout << "Please try again \n";
     } else {
-        std::cout << "So far, so good\n";
         write( "ClientID", ClientID, "auth" );
         write( "ClientSecret", ClientSecret, "auth" );
         write( "Scope", scope, "auth" );

@@ -83,7 +83,8 @@ void Get_Playlists_Items(){
                     {"name", item["item"]["name"]},
                     {"album_url", item["item"]["album"]["images"][1]["url"]},
                     {"artist_name", item["item"]["artists"][0]["name"]},
-                    {"added_at", item["added_at"]}
+                    {"added_at", item["added_at"]},
+                    {"uri", item["item"]["album"]["uri"]}
                 });
 
                 playlist_items["items"] += new_data["items"].back();
