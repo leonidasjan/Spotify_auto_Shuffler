@@ -17,6 +17,7 @@
 #include "httpserver.hpp"
 #include "rand_str.hpp"
 #include "request_playlists.hpp"
+#include "shuffle.hpp"
 
 
 int main(){
@@ -54,14 +55,13 @@ int main(){
     std::cout << "\nHello " << Profile_Data.value("display_name","") << "!\n";
     write(Profile_Data,"profile_data");
 
-    Get_Current_Users_Playlists();
-    Get_Playlists_Items();
     // Request shuffle data from server
 
-
-
-
+    Get_Current_Users_Playlists();
+    Get_Playlists_Items();
 
     // Shuffle selected playlists
+
+    shuffle_choice();
 
 }
