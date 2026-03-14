@@ -45,11 +45,11 @@ void Get_Playlists_Items(){
     nlohmann::json playlists = read("playlists");
 
     std::string playlist_url = "None";
-    int pick = 0;
+    std::string s_pick = "";
 
     std::cout << "Pick a number between 1-" << playlists.value("total", 0) << " : ";
-    std::cin >> pick;
-
+    std::getline(std::cin, s_pick);
+    int pick = std::stoi(s_pick);
     if (pick == 0){
         std::cout << "Cant pick " << pick << ", first playlist starts with 1 \n";
     } 
