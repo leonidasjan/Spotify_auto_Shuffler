@@ -60,7 +60,9 @@ void Get_Playlists_Items(){
         std::cout << "Playlist Name: " << playlists["items"][pick]["name"] << '\n';
         std::cout << "Total Songs in this playlist: " << playlists["items"][pick]["items"]["total"] << '\n';
         write("selected_playlist_id",playlists["items"][pick]["id"], "playlists");
+        write("selected_playlist_snapshot_id",playlists["items"][pick]["snapshot_id"], "playlists");
         write("selected_playlist_name",playlists["items"][pick]["name"], "playlists");
+        write("selected_playlist_total", playlists["items"][pick]["items"]["total"].dump() ,"playlists");
     }
 
     else {

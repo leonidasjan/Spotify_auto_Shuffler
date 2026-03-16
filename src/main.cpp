@@ -62,6 +62,12 @@ int main(){
 
     // Shuffle selected playlists
 
-    shuffle_choice();
+    auto res = shuffle_choice();
+    while (!res){
+        res = shuffle_choice();
+    };
+    if (res == 1){
+        shuffle();
+    }
 
 }

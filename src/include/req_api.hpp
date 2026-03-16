@@ -26,13 +26,23 @@ namespace req_api{
     ///@}
     ///@{
     /**
-     *  @brief  Put Request.
+     *  @brief  Post Request.
      *  @param  url Without https:// .
      *  @param  body < std::string , std::string >
      *  @return  Body of response in JSON.
      *
      */
     nlohmann::json post(std::string url, std::string path ,std::map<std::string,std::string> body);
+    ///@}
+    ///@{
+    /**
+     *  @brief  Put Request.
+     *  @param  url Without https:// .
+     *  @param  body JSON FORMAT
+     *  @return  Body of response in JSON.
+     *
+     */
+    nlohmann::json put(std::string url, std::string path, nlohmann::json body);
     ///@}
 }
 #endif

@@ -152,6 +152,13 @@ namespace req_api {
 
             switch (status) {
 
+                default:
+                    std::cout << "\n=== Something went wrong ===\n";
+                    std::cout << html_res->body;
+                    response["status"] = status;
+                    std::cout << "\n============================\n";
+                break;
+
                 case httplib::OK_200:
                     response = nlohmann::json::parse(html_res->body);
                     response["status"] = httplib::OK_200;
@@ -256,6 +263,13 @@ namespace req_api {
 
             switch (status) {
 
+                default:
+                    std::cout << "\n=== Something went wrong ===\n";
+                    std::cout << html_res->body;
+                    response["status"] = status;
+                    std::cout << "\n============================\n";
+                break;
+
                 case httplib::OK_200:
 
                     response = nlohmann::json::parse(html_res->body);
@@ -274,9 +288,10 @@ namespace req_api {
                 
                 case httplib::BadRequest_400:
 
-                    std::cout << "\nSomething went wrong\n";
+                    std::cout << "\n=== Something went wrong ===\n";
                     std::cout << html_res->body;
                     response["status"] = httplib::BadRequest_400;
+                    std::cout << "\n============================\n";
 
                 break;
             }
@@ -319,33 +334,33 @@ namespace req_api {
        *  @return  Body of response in JSON.
        *
        */
-    nlohmann::json put(std::string url, std::string path, std::map<std::string,std::string> body){
+    nlohmann::json put(std::string url, std::string path, nlohmann::json body){
 
-        nlohmann::json j = read("auth");
         // Client info
 
-        std::string clientid = j["ClientID"];
-        std::string clientsecret = j["ClientSecret"];
-        std::string auth = clientid+":"+clientsecret;
+        nlohmann::json j = read("auth");
+        std::string auth = j["AccessToken"];
         
-        
-
         //Headers
 
         httplib::Headers headers = {
-            {"Authorization", "Basic " + base64::to_base64(auth)}
+            {"Authorization", "Bearer " + auth}
         };
 
-        // Put func only accepts body in string form, need to convert it
-        std::string body_s = encode::map_ordered(body);
 
-        
         nlohmann::json response;
         httplib::SSLClient cli( url , 443);
-        if (auto html_res = cli.Put( path , headers , body_s , "application/x-www-form-urlencoded")){
+        if (auto html_res = cli.Put( path , headers , body.dump() , "application/json")){
             const auto status = html_res->status;
 
             switch (status) {
+
+                default:
+                    std::cout << "\n=== Something went wrong ===\n";
+                    std::cout << html_res->body;
+                    response["status"] = status;
+                    std::cout << "\n============================\n";
+                break;
 
                 case httplib::OK_200:
 
@@ -356,9 +371,10 @@ namespace req_api {
                 
                 case httplib::BadRequest_400:
 
-                    std::cout << "\nSomething went wrong\n";
+                    std::cout << "\n=== Something went wrong ===\n";
                     std::cout << html_res->body;
                     response["status"] = httplib::BadRequest_400;
+                    std::cout << "\n============================\n";
 
                 break;
             }
