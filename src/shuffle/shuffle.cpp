@@ -3,10 +3,12 @@
 #include <map>
 #include <numeric>
 #include <vector>
+#include <ranges>
 #include "request_playlists.hpp"
 #include "check_config.hpp"
 #include "nlohmann/json.hpp"
 #include "req_api.hpp"
+#include "shuffle_alg.hpp"
 
 int shuffle_choice(){
     auto j = read("playlists");
@@ -24,23 +26,36 @@ int shuffle_choice(){
 }
 
 void shuffle(){
+
     auto j = read("playlists");
     auto s = j["selected_playlist_total"].get<std::string>();
-    std::vector<int> v(std::stoi(s));
-    std::iota(v.begin(), v.end(), 0);
 
-    for (auto x : v){
-        std::cout << x;
-    };
-
-    nlohmann::json body = {
-        {"range_start",5},
-        {"insert_before",0},
-        {"snapshot_id",j["selected_playlist_snapshot_id"]}
-    };
-
-
-
+    std::vector<int> v1(std::stoi(s));
+    std::iota(v1.begin(), v1.end(), 0);
+    std::vector<int> v2(std::stoi(s));
+    std::iota(v2.begin(), v2.end(), 0);
+    
     std::string selected_playlist_id = j["selected_playlist_id"];
-    req_api::put("api.spotify.com","/v1/playlists/" + selected_playlist_id + "/items", body);
+
+    shuffler(v1);
+    shuffler(v2);
+    size_t count = 0;
+    for (auto [a,b] : std::views::zip(v1,v2)){
+        auto j_n = read("playlists");
+        std::cout << "\rShuffling ... " << count++ << "/" << v1.size();
+
+            nlohmann::json body = {
+            {"range_start",a},
+            {"insert_before",b},
+            {"snapshot_id",j_n["selected_playlist_snapshot_id"]}
+            };
+
+        auto res = req_api::put("api.spotify.com","/v1/playlists/" + selected_playlist_id + "/items", body);
+        write("selected_playlist_snapshot_id",res["snapshot_id"],"playlists");
+    };
+    std::cout << "\rShuffling ... " << v1.size() << "/" << v1.size() << '\n';
+    std::cout << "Done! Check your playlist \n";
+
+
+
 }

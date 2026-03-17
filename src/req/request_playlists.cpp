@@ -98,11 +98,6 @@ void Get_Playlists_Items(){
 
         while(!playlist_items["next"].is_null()){
             
-            if (playlist_items["status"] == httplib::TooManyRequests_429){
-                std::cout << "Sleeping for 15 seconds, error: TooManyRequests_429";
-                std::this_thread::sleep_for(std::chrono::seconds(15));
-            }
-
             std::cout << "\rFetching data ... " << playlist_items["items"].size() <<'/'<< playlists["items"][pick]["items"].value("total", 0);
 
             auto new_req = req_api::get(playlist_items["next"]);

@@ -8,10 +8,10 @@
 
 void shuffler(std::vector<int>& vec)
 {
-    using std::random_device, std::mt19937, std::shuffle , std::cout,std::vector;
+    using std::vector;
 
-    random_device rd;
-    mt19937 g(rd());
+    std::random_device rd;
+    std::mt19937 g(rd());
 
-    shuffle(vec.begin(), vec.end(), g);
+    std::shuffle(vec.begin(),vec.end(), g);
 }

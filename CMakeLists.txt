@@ -7,7 +7,7 @@ project(SPOTIFY_AUTO_SHUFFLER VERSION 1.0 LANGUAGES CXX)
 # -----------------------------
 # C++ standard
 # -----------------------------
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
