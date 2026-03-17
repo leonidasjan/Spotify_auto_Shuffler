@@ -56,14 +56,14 @@ void shuffle(){
         write("selected_playlist_snapshot_id",res["snapshot_id"],"playlists");
 
         auto end = std::chrono::high_resolution_clock::now();
-        auto dur = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+        auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         double avg = dur.count();
         count++;
 
 
-        std::cout << "\rShuffling ... " << count << "/" << v1.size() << " [ETA: " << avg * (v1.size() - count) << "s ]";
+        std::cout << "\rShuffling ... " << count << "/" << v1.size() << " [ETA: " << avg * (v1.size() - count) / 1000<< "s ]";
     };
-    std::cout << "\rShuffling ... " << v1.size() << "/" << v1.size() << '\n';
+    std::cout << "\r\033[KShuffling ... " << v1.size() << "/" << v1.size() << " [ETA: " << "0" << "s ]" << '\n';
     std::cout << "Done! Check your playlist \n";
 
 
