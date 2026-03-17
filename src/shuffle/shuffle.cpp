@@ -4,6 +4,8 @@
 #include <numeric>
 #include <vector>
 #include <ranges>
+#include <chrono>
+
 #include "request_playlists.hpp"
 #include "check_config.hpp"
 #include "nlohmann/json.hpp"
@@ -41,17 +43,25 @@ void shuffle(){
     shuffler(v2);
     size_t count = 0;
     for (auto [a,b] : std::views::zip(v1,v2)){
+        auto start = std::chrono::high_resolution_clock::now();
         auto j_n = read("playlists");
-        std::cout << "\rShuffling ... " << count++ << "/" << v1.size();
-
-            nlohmann::json body = {
+        
+        nlohmann::json body = {
             {"range_start",a},
             {"insert_before",b},
             {"snapshot_id",j_n["selected_playlist_snapshot_id"]}
-            };
-
+        };
+        
         auto res = req_api::put("api.spotify.com","/v1/playlists/" + selected_playlist_id + "/items", body);
         write("selected_playlist_snapshot_id",res["snapshot_id"],"playlists");
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto dur = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+        double avg = dur.count();
+        count++;
+
+
+        std::cout << "\rShuffling ... " << count << "/" << v1.size() << " [ETA: " << avg * (v1.size() - count) << "s ]";
     };
     std::cout << "\rShuffling ... " << v1.size() << "/" << v1.size() << '\n';
     std::cout << "Done! Check your playlist \n";

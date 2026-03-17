@@ -79,13 +79,13 @@ void get_access_token(){
 
     SSL_library_init(); // dont touch that
     auto j = read("auth");
-    std::string client = j["ClientID"];
+    std::string Code = j["Code"];
     
     std::map<string,string> body =
     {{"1grant_type","authorization_code"},
     {"2redirect_uri","http://127.0.0.1:54789/callback"},
-    {"3code",client}};
-    
+    {"3code",Code}};
+
     req_api::post("accounts.spotify.com","/api/token",body);
 
 

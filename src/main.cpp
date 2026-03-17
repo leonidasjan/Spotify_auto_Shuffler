@@ -51,6 +51,11 @@ int main(){
 
     nlohmann::json Profile_Data = req_api::get("api.spotify.com","/v1/me");
 
+    if (Profile_Data["status"] == 401){
+        get_refresh_token();
+        std::cout << "refreshh!";
+    };
+
     std::cout << "====================================\n";
     std::cout << "\nHello " << Profile_Data.value("display_name","") << "!\n";
     write(Profile_Data,"profile_data");

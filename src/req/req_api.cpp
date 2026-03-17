@@ -175,6 +175,7 @@ namespace req_api {
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
                     get_refresh_token();
+                    std::cout << "get req?";
                 break;
 
                 case httplib::Forbidden_403:
@@ -267,6 +268,17 @@ namespace req_api {
                 case httplib::OK_200:
                     response = nlohmann::json::parse(html_res->body);
                     response["status"] = httplib::OK_200;
+                    if(response.contains("access_token")){
+
+                        write("AccessToken",response["access_token"],"auth");
+                        std::cout << "Refreshed: Access Token!\n";
+                    };
+
+                    if(response.contains("refresh_token")){
+
+                        write("RefreshToken",response["refresh_token"],"auth");
+                        std::cout << "Refreshed: Refresh Token!\n";
+                    };
                 break;
                 
                 case httplib::BadRequest_400:
@@ -276,6 +288,7 @@ namespace req_api {
                 break;
 
                 case httplib::Unauthorized_401:
+                    std::cout << body_s;
                     std::cerr << "Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
