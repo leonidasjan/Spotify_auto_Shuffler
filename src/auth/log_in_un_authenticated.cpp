@@ -22,7 +22,7 @@ void log_in_un_authenticated(std::string state){
 
     cout << "Opening up browser...\n\n";
 
-    // ShellExecute(0, 0, dev_uri.c_str(), 0, 0 , SW_SHOW );
+    ShellExecute(0, 0, dev_uri.c_str(), 0, 0 , SW_SHOW );
     
     cout << "Log in with your Spotify Account and accept the Terms of Service\n\n";
 
