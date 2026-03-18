@@ -42,8 +42,9 @@ void shuffle(){
     shuffler(v1);
     shuffler(v2);
     size_t count = 0;
+    size_t total = v1.size();
+    double avg = 0;
     for (auto [a,b] : std::views::zip(v1,v2)){
-        auto start = std::chrono::high_resolution_clock::now();
         auto j_n = read("playlists");
         
         nlohmann::json body = {
@@ -51,19 +52,20 @@ void shuffle(){
             {"insert_before",b},
             {"snapshot_id",j_n["selected_playlist_snapshot_id"]}
         };
-        
+        auto start = std::chrono::high_resolution_clock::now();
         auto res = req_api::put("api.spotify.com","/v1/playlists/" + selected_playlist_id + "/items", body);
-        write("selected_playlist_snapshot_id",res["snapshot_id"],"playlists");
-
+        if (res["status"] == httplib::OK_200){
+            write("selected_playlist_snapshot_id",res["snapshot_id"],"playlists");
+        }
         auto end = std::chrono::high_resolution_clock::now();
-        auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-        double avg = dur.count();
-        count++;
+        auto d = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        double duration = d.count();
+        ++count;
+        avg += duration;
 
-
-        std::cout << "\rShuffling ... " << count << "/" << v1.size() << " [ETA: " << avg * (v1.size() - count) / 1000<< "s ]";
+        std::cout << "\r\033[KShuffling ... " << count << "/" << total << " [ETA: " << ( (avg / count) * (total - count) ) / 1000 << "s ]";
     };
-    std::cout << "\r\033[KShuffling ... " << v1.size() << "/" << v1.size() << " [ETA: " << "0" << "s ]" << '\n';
+    std::cout << "\r\033[KShuffling ... " << total << "/" << total << " [ETA: " << "0" << "s ]" << '\n';
     std::cout << "Done! Check your playlist \n";
 
 
