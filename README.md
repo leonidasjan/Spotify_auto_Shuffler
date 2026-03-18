@@ -13,6 +13,9 @@ playlist-read-private
 playlist-modify-private
 playlist-modify-public
 (you can read about them when authenticating)
+
+ Compatibile with spotify API. (3/18/2026)
+
 ## Build
 
 mkdir build
