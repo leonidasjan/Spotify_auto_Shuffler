@@ -40,14 +40,14 @@ void Get_Current_Users_Playlists(){
 }
 
 void Get_Playlists_Items(){
-
     // we need playlist ID in order to get the items
     nlohmann::json playlists = read("playlists");
+    std::cin.clear();
 
     std::string playlist_url = "None";
     std::string s_pick = "";
 
-    std::cout << "Pick a number between 1-" << playlists.value("total", 0) << " : ";
+    std::cout << std::flush << "Pick a number between 1-" << playlists.value("total", 0) << " : ";
     std::getline(std::cin, s_pick);
     int pick = std::stoi(s_pick);
     if (pick == 0){

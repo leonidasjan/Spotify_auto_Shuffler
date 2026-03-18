@@ -40,13 +40,13 @@ void log_in_un_authenticated(std::string state){
 
         cout << "Okay, now copy the ==Client ID== and paste it in here: ";
 
-        cin >> ClientID;
+        std::getline(std::cin,ClientID);
 
         cout << "\n\nClick 'View Secret Key' and \n";
 
         cout << "\n\nCopy the ==Client Secret== and paste it in here: ";
 
-        cin >> ClientSecret;
+        std::getline(std::cin,ClientSecret);
 
         cout << "\n\nDone! Now Authenticate in your browser.\n\n";
         get_auth_code( ClientID, ClientSecret, state );

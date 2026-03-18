@@ -271,13 +271,13 @@ namespace req_api {
                     if(response.contains("access_token")){
 
                         write("AccessToken",response["access_token"],"auth");
-                        std::cout << "Refreshed: Access Token!\n";
+                        std::cout << "Refreshed: Access Token!\n" << std::endl;
                     };
 
                     if(response.contains("refresh_token")){
 
                         write("RefreshToken",response["refresh_token"],"auth");
-                        std::cout << "Refreshed: Refresh Token!\n";
+                        std::cout << "Refreshed: Refresh Token!\n" << std::endl;
                     };
                 break;
                 
