@@ -71,6 +71,7 @@ namespace req_api {
                     std::cerr << "[Get] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
+                    log_in_un_authenticated(j["State"]);
 
                 break;
 
@@ -186,6 +187,7 @@ namespace req_api {
                     std::cerr << "[Get] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
+                    log_in_un_authenticated(j["State"]);
                 break;
 
                 case httplib::TooManyRequests_429:
@@ -304,6 +306,7 @@ namespace req_api {
                     std::cerr << "[Post] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
+                    log_in_un_authenticated(j["State"]);
                 break;
 
                 case httplib::TooManyRequests_429:
@@ -408,6 +411,7 @@ namespace req_api {
                     std::cerr << "[Put] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
+                    log_in_un_authenticated(j["State"]);
                 break;
 
                 case httplib::TooManyRequests_429:
