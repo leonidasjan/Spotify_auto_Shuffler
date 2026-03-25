@@ -9,7 +9,7 @@
 void log_in_un_authenticated(std::string state){
     using std::cout , std::cin, std::string;
 
-
+    write("State",state,"auth");
 
     string ClientID = "None";
     string ClientSecret = "None";

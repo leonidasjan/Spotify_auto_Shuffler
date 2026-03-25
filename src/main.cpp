@@ -30,20 +30,17 @@ int main(){
     cout << "Welcome to Spotify Auto Shuffler. \n";
 
     // Start HTML server with unique state for auth
-    string state = randomStrGen(16);
-    std::jthread serverThread(serverHTML,state);
+    write("State",randomStrGen(16),"auth");
+    auto j = read("auth");
+    std::jthread serverThread(serverHTML);
 
     check_config_folders();
     
     // need to check for access token
-    std::mutex m;
-    m.lock();
-    nlohmann::json j = read("auth");
-    m.unlock();
 
-    if (j.is_null()) {
+    if (j.is_null() || j["ClientID"].is_null() || j["AccessToken"].is_null() || j["RefreshToken"].is_null()) {
         // user needs access token to continue, start auth proccess
-        log_in_un_authenticated(state); 
+        log_in_un_authenticated(j["State"]); 
     } else {
         // always get refresh token before continuing with requests
         get_refresh_token();
@@ -53,8 +50,9 @@ int main(){
 
     if (Profile_Data["status"] == 401){
         get_refresh_token();
-        std::cout << "refreshh!";
-    };
+    } else if (Profile_Data["status"] == 403){
+        log_in_un_authenticated(j["State"]);
+    }
 
     std::cout << "====================================\n";
     std::cout << "\nHello " << Profile_Data.value("display_name","") << "!\n";

@@ -4,6 +4,7 @@
 #include "tobiaslocker/base64.hpp" 
 #include "auth.hpp"
 #include "check_config.hpp"
+#include "log_in_un_authenticated.hpp"
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -13,13 +14,13 @@
 #include <mutex>
 
 
-void serverHTML(std::string state){
+void serverHTML(){
   using namespace httplib;
   // HTTP
   Server svr;
-
-  svr.Get("/callback", [state](const Request& req, Response& res) {
+  svr.Get("/callback", [](const Request& req, Response& res) {
     std::cout << "Got a response from spotify server!\n";
+    std::string state = read("auth")["State"];
     std::mutex m;
     std::lock_guard<std::mutex> lock(m);
     
@@ -32,16 +33,16 @@ void serverHTML(std::string state){
 
     if(req.has_param("code")){
       req_code = req.get_param_value("code");
-      if      (req_code == "")     { res.set_content("Something went wrong, try again","text/plain");}
-      else if (req_state != state) { res.set_content("State mismatch","text/plain");}
-      else { write( "Code", req_code, "auth" ); }
-      res.set_content("Approved, you can close this window now!","text/plain");
+      if      (req_code == "")     { res.set_content("Something went wrong, try again","text/plain"); log_in_un_authenticated(state);}
+      else if (req_state != state) { res.set_content("State mismatch","text/plain");                  log_in_un_authenticated(state);}
+      else {write( "Code", req_code, "auth" ); res.set_content("Approved, you can close this window now!","text/plain");}
     };
 
     if(req.has_param("error")){
       auto req_error = req.get_param_value("error");
       res.set_content("Error: You probably copied something wrong, try again","text/plain");
       res.set_content(req_error,"text/plain");
+      log_in_un_authenticated(state);
 
     }
 

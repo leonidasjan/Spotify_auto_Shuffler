@@ -65,7 +65,7 @@ namespace req_api {
                 break;
 
                 case httplib::Forbidden_403:
-                    std::cerr << "Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here." << std::endl;
+                    std::cerr << "Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
 

@@ -58,21 +58,34 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         std::unique_lock<std::mutex> lk(mut);
         nlohmann::json j = read("auth");
         string code = j["Code"];
-        std::cout << "Waiting for code ...\n";  
-        while(code == std::string("None"))                                   
-        {
+        string test = "n";
+        auto start = std::chrono::high_resolution_clock::now();
+        std::cout << "Waiting for code ...\n";
+        size_t c = 10;
+
+        while(code == std::string("None") && (test == "n" || test == "N" || test.empty()))                                   
+        {    
             lk.unlock();
             j = read("auth");
             code = j["Code"];      
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));   
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            auto end = std::chrono::high_resolution_clock::now();
+            if (std::chrono::duration_cast<std::chrono::seconds>(end - start) > std::chrono::seconds(c)){
+                std::cout << "Do you want to reset? [y/N]: ";
+                std::getline(std::cin,test);
+                c = (std::chrono::duration_cast<std::chrono::seconds>(end - start).count()) + 10;
+            }     
             lk.lock();       
         }
         lk.unlock();
-        // std::thread clientThread(get_access_token);
-        // if (clientThread.joinable()){
-        //     clientThread.join();
-        // } else {std::cout << "Cant join client thread\n";};
-        get_access_token();
+
+        if (test == "n"){
+            get_access_token();
+        } else {
+            string state = randomStrGen(16);
+            write("State",state,"auth");
+            log_in_un_authenticated(state);
+        }
     };
 };
 void get_access_token(){
