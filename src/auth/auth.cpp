@@ -61,7 +61,7 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
         string test = "n";
         auto start = std::chrono::high_resolution_clock::now();
         std::cout << "Waiting for code ...\n";
-        size_t c = 10;
+        size_t c = 60;
 
         while(code == std::string("None") && (test == "n" || test == "N" || test.empty()))                                   
         {    
@@ -73,13 +73,13 @@ void get_auth_code(string ClientID, string ClientSecret, string state){
             if (std::chrono::duration_cast<std::chrono::seconds>(end - start) > std::chrono::seconds(c)){
                 std::cout << "Do you want to reset? [y/N]: ";
                 std::getline(std::cin,test);
-                c = (std::chrono::duration_cast<std::chrono::seconds>(end - start).count()) + 10;
+                c = (std::chrono::duration_cast<std::chrono::seconds>(end - start).count()) + 60;
             }     
             lk.lock();       
         }
         lk.unlock();
 
-        if (test == "n"){
+        if (test == "n" || test == "N" || test.empty()){
             get_access_token();
         } else {
             string state = randomStrGen(16);

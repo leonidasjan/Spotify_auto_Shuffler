@@ -2,6 +2,7 @@
 #include "yhirose/httplib.h"
 #include "nlohmann/json.hpp"
 #include "tobiaslocker/base64.hpp"
+#include "log_in_un_authenticated.hpp"
 #include "check_config.hpp"
 #include "encoder.hpp"
 #include "auth.hpp"
@@ -50,14 +51,16 @@ namespace req_api {
                 
                 case httplib::BadRequest_400:
 
-                    std::cout << "\nSomething went wrong\n";
-                    std::cout << html_res->body;
+                    std::cout << "[Get] Error: BadRequest_400\n";
+                    std::cout << "[Get] " << html_res->body;
                     response["status"] = httplib::BadRequest_400;
+                    log_in_un_authenticated(j["State"]);
+                    
 
                 break;
 
                 case httplib::Unauthorized_401:
-                    std::cerr << "Error: Unauthorized_401, refreshing access token!" << std::endl;
+                    std::cerr << "[Get] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     get_refresh_token();
                     response["status"] = httplib::Unauthorized_401;
@@ -65,7 +68,7 @@ namespace req_api {
                 break;
 
                 case httplib::Forbidden_403:
-                    std::cerr << "Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
+                    std::cerr << "[Get] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
 
@@ -79,7 +82,7 @@ namespace req_api {
 
                 case httplib::NotFound_404:
 
-                std::cerr << "Error: NotFound_404" << std::endl;
+                std::cerr << "[Get] Error: NotFound_404" << std::endl;
                 std::cout << html_res -> body << '\n';
                 std::cout << url+path << '\n';
                 response["status"] = httplib::NotFound_404;
@@ -95,24 +98,24 @@ namespace req_api {
             switch (err) {
                 case httplib::Error::SSLConnection:
 
-                    std::cout << "SSL connection failed, SSL error: " << html_res.ssl_error() << std::endl;
+                    std::cout << "[Get] SSL connection failed, SSL error: " << html_res.ssl_error() << std::endl;
                     
                 break;
 
                 default:
-                    std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+                    std::cout << "[Get] HTTP error: " << httplib::to_string(err) << std::endl;
             };
         };
 
         
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open before cli.stop()\n";
+            std::cout << "[Get] Socket is still open before cli.stop()\n";
         };
 
         cli.stop();
 
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open!!!!!  might crash\n";
+            std::cout << "[Get] Socket is still open!!!!!  might crash\n";
         };
         return response;
     };
@@ -154,7 +157,7 @@ namespace req_api {
 
                 default:
                     std::cout << "\n=== Something went wrong ===\n";
-                    std::cout << html_res->body;
+                    std::cout << "[Get] "<< html_res->body;
                     response["status"] = status;
                     std::cout << "\n============================\n";
                 break;
@@ -165,13 +168,14 @@ namespace req_api {
                 break;
                 
                 case httplib::BadRequest_400:
-                    std::cout << "\nSomething went wrong\n";
-                    std::cout << html_res->body;
+                    std::cout << "[Get] Error: BadRequest_400\n";
+                    std::cout << "[Get] " << html_res->body;
                     response["status"] = httplib::BadRequest_400;
+                    log_in_un_authenticated(j["State"]);
                 break;
 
                 case httplib::Unauthorized_401:
-                    std::cerr << "Error: Unauthorized_401, refreshing access token!" << std::endl;
+                    std::cerr << "[Get] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
                     get_refresh_token();
@@ -179,19 +183,19 @@ namespace req_api {
                 break;
 
                 case httplib::Forbidden_403:
-                    std::cerr << "Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here." << std::endl;
+                    std::cerr << "[Get] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
                 break;
 
                 case httplib::TooManyRequests_429:
                     response["status"] = httplib::TooManyRequests_429;
-                    std::cerr << "Sleeping for 15 seconds, error: TooManyRequests_429";
+                    std::cerr << "[Get] Sleeping for 15 seconds, error: TooManyRequests_429";
                     std::this_thread::sleep_for(std::chrono::seconds(15));
                 break;
 
                 case httplib::NotFound_404:
-                    std::cerr << "Error: NotFound_404" << std::endl;
+                    std::cerr << "[Get] Error: NotFound_404" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::NotFound_404;
                 break;
@@ -205,24 +209,24 @@ namespace req_api {
             switch (err) {
                 case httplib::Error::SSLConnection:
 
-                    std::cout << "SSL connection failed, SSL error: " << html_res.ssl_error() << std::endl;
+                    std::cout << "[Get] SSL connection failed, SSL error: " << html_res.ssl_error() << std::endl;
                     
                 break;
 
                 default:
-                    std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+                    std::cout << "[Get] HTTP error: " << httplib::to_string(err) << std::endl;
             };
         };
 
         
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open before cli.stop()\n";
+            std::cout << "[Get] Socket is still open before cli.stop()\n";
         };
 
         cli.stop();
 
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open!!!!!  might crash\n";
+            std::cout << "[Get] Socket is still open!!!!!  might crash\n";
         };
         if (response.is_null()){response = "Error";};
         return response;
@@ -260,7 +264,7 @@ namespace req_api {
 
                 default:
                     std::cout << "\n=== Something went wrong ===\n";
-                    std::cout << html_res->body;
+                    std::cout << "[Post] "<< html_res->body;
                     response["status"] = status;
                     std::cout << "\n============================\n";
                 break;
@@ -282,33 +286,34 @@ namespace req_api {
                 break;
                 
                 case httplib::BadRequest_400:
-                    std::cout << "\nSomething went wrong\n";
-                    std::cout << html_res->body;
+                    std::cout << "[Post] Error: BadRequest_400\n";
+                    std::cout << "[Post] "<<  html_res->body;
                     response["status"] = httplib::BadRequest_400;
+                    log_in_un_authenticated(j["State"]);
                 break;
 
                 case httplib::Unauthorized_401:
                     std::cout << body_s;
-                    std::cerr << "Error: Unauthorized_401, refreshing access token!" << std::endl;
+                    std::cerr << "[Post] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
                     get_refresh_token();
                 break;
 
                 case httplib::Forbidden_403:
-                    std::cerr << "Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here." << std::endl;
+                    std::cerr << "[Post] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
                 break;
 
                 case httplib::TooManyRequests_429:
                     response["status"] = httplib::TooManyRequests_429;
-                    std::cerr << "Sleeping for 15 seconds, error: TooManyRequests_429";
+                    std::cerr << "[Post] Sleeping for 15 seconds, error: TooManyRequests_429";
                     std::this_thread::sleep_for(std::chrono::seconds(15));
                 break;
 
                 case httplib::NotFound_404:
-                    std::cerr << "Error: NotFound_404" << std::endl;
+                    std::cerr << "[Post] Error: NotFound_404" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::NotFound_404;
                 break;
@@ -321,24 +326,24 @@ namespace req_api {
 
             switch (err) {
                 case httplib::Error::SSLConnection:
-                    std::cout << "SSL connection failed, SSL error: "
+                    std::cout << "[Post] SSL connection failed, SSL error: "
                             << html_res.ssl_error() << std::endl;
                 break;
 
                 default:
-                    std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+                    std::cout << "[Post] HTTP error: " << httplib::to_string(err) << std::endl;
             };
         };
 
         
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open before cli.stop()\n";
+            std::cout << "[Post] Socket is still open before cli.stop()\n";
         };
 
         cli.stop();
 
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open!!!!!  might crash\n";
+            std::cout << "[Post] Socket is still open!!!!!  might crash\n";
         };
         return response;
     };
@@ -375,7 +380,7 @@ namespace req_api {
 
                 default:
                     std::cout << "\n=== Something went wrong ===\n";
-                    std::cout << html_res->body;
+                    std::cout << "[Put] "<< html_res->body;
                     response["status"] = status;
                     std::cout << "\n============================\n";
                 break;
@@ -386,32 +391,33 @@ namespace req_api {
                 break;
                 
                 case httplib::BadRequest_400:
-                    std::cout << "\nSomething went wrong\n";
+                    std::cout << "[Put] Error: BadRequest_400\n";
                     std::cout << html_res->body;
                     response["status"] = httplib::BadRequest_400;
+                    log_in_un_authenticated(j["State"]);
                 break;
 
                 case httplib::Unauthorized_401:
-                    std::cerr << "Error: Unauthorized_401, refreshing access token!" << std::endl;
+                    std::cerr << "[Put] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
                     get_refresh_token();
                 break;
 
                 case httplib::Forbidden_403:
-                    std::cerr << "Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here." << std::endl;
+                    std::cerr << "[Put] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
                 break;
 
                 case httplib::TooManyRequests_429:
                     response["status"] = httplib::TooManyRequests_429;
-                    std::cerr << "Sleeping for 15 seconds, error: TooManyRequests_429";
+                    std::cerr << "[Put] Sleeping for 15 seconds, error: TooManyRequests_429";
                     std::this_thread::sleep_for(std::chrono::seconds(15));
                 break;
 
                 case httplib::NotFound_404:
-                    std::cerr << "Error: NotFound_404" << std::endl;
+                    std::cerr << "[Put] Error: NotFound_404" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::NotFound_404;
                 break;
@@ -424,24 +430,24 @@ namespace req_api {
 
             switch (err) {
                 case httplib::Error::SSLConnection:
-                    std::cout << "SSL connection failed, SSL error: "
+                    std::cout << "[Put] SSL connection failed, SSL error: "
                             << html_res.ssl_error() << std::endl;
                 break;
 
                 default:
-                    std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+                    std::cout << "[Put] HTTP error: " << httplib::to_string(err) << std::endl;
             };
         };
 
         
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open before cli.stop()\n";
+            std::cout << "[Put] Socket is still open before cli.stop()\n";
         };
 
         cli.stop();
 
         if (cli.is_socket_open()){
-            std::cout << "Socket is still open!!!!!  might crash\n";
+            std::cout << "[Put] Socket is still open!!!!!  might crash\n";
         };
         return response;
     };

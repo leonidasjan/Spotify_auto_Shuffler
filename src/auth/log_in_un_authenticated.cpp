@@ -15,7 +15,7 @@ void log_in_un_authenticated(std::string state){
     string ClientSecret = "None";
     const string dev_uri = "https://developer.spotify.com/dashboard";
 
-
+    cout << '\n';
     cout << "====================================\n";
 
     cout << "First of all, You need to log in to Your Spotify Account and create an app\n\n";
