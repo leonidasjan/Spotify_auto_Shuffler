@@ -28,13 +28,13 @@ int main(){
     using std::cout, std::string;
 
     cout << "Welcome to Spotify Auto Shuffler. \n";
+    check_config_folders();
 
     // Start HTML server with unique state for auth
     write("State",randomStrGen(16),"auth");
     auto j = read("auth");
     std::jthread serverThread(serverHTML);
 
-    check_config_folders();
     
     // need to check for access token
 
