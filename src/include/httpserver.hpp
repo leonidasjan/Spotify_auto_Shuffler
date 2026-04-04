@@ -2,5 +2,6 @@
 #define HTTP_SERVER_HPP
 #include <string>
 void serverHTML();
+void serverHTMLstop();
 std::string get_auth_code();
 #endif

@@ -12,17 +12,14 @@
 #include <thread>
 #include <map>
 #include <mutex>
-
+httplib::Server svr;
 
 void serverHTML(){
   using namespace httplib;
-  // HTTP
-  Server svr;
-  svr.Get("/callback", [](const Request& req, Response& res) {
+    // HTTP
+    svr.Get("/callback", [](const Request& req, Response& res) {
     std::cout << "Got a response from spotify server!\n";
     std::string state = read("auth")["State"];
-    std::mutex m;
-    std::lock_guard<std::mutex> lock(m);
     
     std::string req_code = "";
     std::string req_state = "";
@@ -34,7 +31,7 @@ void serverHTML(){
     if(req.has_param("code")){
       req_code = req.get_param_value("code");
       if      (req_code == "")     { res.set_content("Something went wrong, try again","text/plain"); log_in_un_authenticated(state);}
-      else if (req_state != state) { res.set_content("State mismatch","text/plain");                  log_in_un_authenticated(state);}
+      else if (req_state != state) { res.set_content("State mismatch, try again","text/plain");                  log_in_un_authenticated(state);}
       else {write( "Code", req_code, "auth" ); res.set_content("Approved, you can close this window now!","text/plain");}
     };
 
@@ -45,13 +42,14 @@ void serverHTML(){
       log_in_un_authenticated(state);
 
     }
-
-
   });
-
-  std::cout << " \n[HTTPserver] Starting on http://127.0.0.1:54789 \n";
-  std::cout << "\n[HTTPserver] Started\n";
+  std::cout << "[HTTPserver] Starting on http://127.0.0.1:54789 \n";
+  std::cout << "[HTTPserver] Started\n";
   svr.listen("127.0.0.1", 54789);
-  std::cout << "\n[HTTPserver] Stopped. \n";
+}
+
+void serverHTMLstop(){
+  svr.stop();
+  std::cout << "[HTTPserver] Stopped. \n";
 }
 

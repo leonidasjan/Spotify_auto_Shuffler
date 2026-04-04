@@ -67,10 +67,34 @@ int main(){
 
     auto res = shuffle_choice();
     while (!res){
+        Get_Current_Users_Playlists();
+        Get_Playlists_Items();
         res = shuffle_choice();
     };
     if (res == 1){
         shuffle();
     }
-
+    std::string pick = "Y";
+    while (pick == "Y" || pick == "y" || pick == ""){
+        std::cout << "Want to shuffle another playlist? [Y/n]: ";
+        std::getline(std::cin, pick);
+        if (pick == "Y" || pick == "y" || pick == ""){
+            auto res = shuffle_choice();
+            while (!res){
+                Get_Current_Users_Playlists();
+                Get_Playlists_Items();
+                res = shuffle_choice();
+            };
+            if (res == 1){
+                shuffle();
+            }
+        } else {
+            break;
+        }
+    }
+    std::cout << "[Main] Requesting: html_stop\n";
+    serverThread.request_stop();
+    serverHTMLstop();
+    return 0;
 }
+

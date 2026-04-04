@@ -16,27 +16,43 @@ void Get_Current_Users_Playlists(){
     };
 
     nlohmann::json playlists = req_api::get("api.spotify.com","/v1/me/playlists?"+encode::map_ordered(m));
+
+    // the shuffling works only when ur the owner of the playlist, so we need to exclude the followed playlists
+    string owner = read("profile_data")["display_name"];
+
+    for (size_t c = 0; c < playlists["items"].size();){
+        if ( playlists["items"][c]["owner"]["display_name"] != owner ){
+            playlists["items"].erase(c);
+        } else {
+            c++;
+        }
+
+    }
     write(playlists,"playlists");
 
 
     while(!playlists["next"].is_null())                                   
     {
         offset += 50;
-        nlohmann::json playlists = req_api::get("api.spotify.com","/v1/me/playlists?"+encode::map_ordered(m));    
+        nlohmann::json playlists = req_api::get("api.spotify.com","/v1/me/playlists?"+encode::map_ordered(m));
+
+        for (size_t c = 0; c < playlists["items"].size();){
+            if ( playlists["items"][c]["owner"]["display_name"] != owner ){
+                playlists["items"].erase(c);
+            } else {
+                c++;
+            }
+
+        }    
     };
-    std::cout << "Total Playlists: " << playlists.value("total", 0) << std::endl;
 
-    int counter = 0;
-    std::map<int,string> map_playlists;
-
+    size_t counter = 0;
     for (auto x : playlists["items"]){
-        counter += 1;
-        map_playlists.insert_or_assign(counter,x["name"]);
+            counter += 1;
+            std::cout << counter << ". " << x["name"] << '\n';
     };
 
-    for (auto x : map_playlists){
-        std::cout << x.first << ". " << x.second << '\n';
-    }
+    std::cout << std::flush << "Pick a number between 1-" << counter << " : ";
 }
 
 void Get_Playlists_Items(){
@@ -47,7 +63,6 @@ void Get_Playlists_Items(){
     std::string playlist_url = "None";
     std::string s_pick = "";
 
-    std::cout << std::flush << "Pick a number between 1-" << playlists.value("total", 0) << " : ";
     std::getline(std::cin, s_pick);
     int pick = std::stoi(s_pick);
     if (pick == 0){
