@@ -10,8 +10,8 @@ void Get_Current_Users_Playlists(){
     using std::string;
     int limit = 50, offset = 0;
 
-    std::map<string,string> m =
-        {{"1limit",std::to_string(limit)},
+    std::map<string,string> m ={
+        {"1limit",std::to_string(limit)},
         {"2offset",std::to_string(offset)}
     };
 
@@ -21,15 +21,12 @@ void Get_Current_Users_Playlists(){
     string owner = read("profile_data")["display_name"];
 
     for (size_t c = 0; c < playlists["items"].size();){
+
         if ( playlists["items"][c]["owner"]["display_name"] != owner ){
             playlists["items"].erase(c);
-        } else {
-            c++;
-        }
+        } else { c++; } };
 
-    }
     write(playlists,"playlists");
-
 
     while(!playlists["next"].is_null())                                   
     {
@@ -39,11 +36,8 @@ void Get_Current_Users_Playlists(){
         for (size_t c = 0; c < playlists["items"].size();){
             if ( playlists["items"][c]["owner"]["display_name"] != owner ){
                 playlists["items"].erase(c);
-            } else {
-                c++;
-            }
-
-        }    
+            } else { c++; }
+        }   
     };
 
     size_t counter = 0;
@@ -86,58 +80,62 @@ void Get_Playlists_Items(){
     }
 
     // getting items starts here
-    if (playlist_url != "None"){
+    
+    if(playlist_url != "None"){
+        return;
+    };
 
-        nlohmann::json playlist_items;
-        nlohmann::json new_req = req_api::get(playlist_url+"?market=PL&limit=50");
+    nlohmann::json playlist_items;
+    nlohmann::json new_req = req_api::get(playlist_url+"?market=PL&limit=50");
 
-        playlist_items["next"] = new_req["next"];
-        playlist_items["status"] = new_req["status"];
+
+
+    playlist_items["next"] = new_req["next"];
+    playlist_items["status"] = new_req["status"];
+
+    for (auto item : new_req["items"]){
+            
+            nlohmann::json new_data;
+            new_data["items"].push_back({
+                {"img", item["item"]["album"]["images"][1]["url"]},
+                {"name", item["item"]["name"]},
+                {"album_url", item["item"]["album"]["images"][1]["url"]},
+                {"artist_name", item["item"]["artists"][0]["name"]},
+                {"added_at", item["added_at"]},
+                {"uri", item["item"]["album"]["uri"]}
+            });
+
+            playlist_items["items"] += new_data["items"].back();
+    };
+    
+    write(playlist_items, "playlists//"+playlists["items"][pick].value("name","Unknown")+"_items");
+
+    while(!playlist_items["next"].is_null()){
+        
+        std::cout << "\rFetching data ... " << playlist_items["items"].size() <<'/'<< playlists["items"][pick]["items"].value("total", 0);
+
+        auto new_req = req_api::get(playlist_items["next"]);
 
         for (auto item : new_req["items"]){
-                
-                nlohmann::json new_data;
-                new_data["items"].push_back({
-                    {"img", item["item"]["album"]["images"][1]["url"]},
-                    {"name", item["item"]["name"]},
-                    {"album_url", item["item"]["album"]["images"][1]["url"]},
-                    {"artist_name", item["item"]["artists"][0]["name"]},
-                    {"added_at", item["added_at"]},
-                    {"uri", item["item"]["album"]["uri"]}
-                });
-
-                playlist_items["items"] += new_data["items"].back();
-        };
-        
-        write(playlist_items, "playlists//"+playlists["items"][pick].value("name","Unknown")+"_items");
-
-        while(!playlist_items["next"].is_null()){
             
-            std::cout << "\rFetching data ... " << playlist_items["items"].size() <<'/'<< playlists["items"][pick]["items"].value("total", 0);
+            nlohmann::json new_data;
+            new_data["items"].push_back({
+                {"img", item["item"]["album"]["images"][1]["url"]},
+                {"name", item["item"]["name"]},
+                {"album_url", item["item"]["album"]["images"][1]["url"]},
+                {"artist_name", item["item"]["artists"][0]["name"]},
+                {"added_at", item["added_at"]}
+            });
 
-            auto new_req = req_api::get(playlist_items["next"]);
-
-            for (auto item : new_req["items"]){
-                
-                nlohmann::json new_data;
-                new_data["items"].push_back({
-                    {"img", item["item"]["album"]["images"][1]["url"]},
-                    {"name", item["item"]["name"]},
-                    {"album_url", item["item"]["album"]["images"][1]["url"]},
-                    {"artist_name", item["item"]["artists"][0]["name"]},
-                    {"added_at", item["added_at"]}
-                });
-
-                playlist_items["items"] += new_data["items"].back();
-            };
-
-            playlist_items["next"] = new_req["next"];
-
+            playlist_items["items"] += new_data["items"].back();
         };
-        
-        write(playlist_items, "playlists//"+playlists["items"][pick].value("name","Unknown")+"_items");
+
+        playlist_items["next"] = new_req["next"];
 
     };
+    
+    write(playlist_items, "playlists//"+playlists["items"][pick].value("name","Unknown")+"_items");
+
     std::cout << "\rFetching data ... " << playlists["items"][pick]["items"].value("total", 0) <<'/'<< playlists["items"][pick]["items"].value("total", 0) << '\n';
     std::cout << "Updated: " << playlists["items"][pick].value("name","Unknown")+"_items.json\n";
 

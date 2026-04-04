@@ -56,6 +56,10 @@ void shuffle(){
         auto res = req_api::put("api.spotify.com","/v1/playlists/" + selected_playlist_id + "/items", body);
         if (res["status"] == httplib::OK_200){
             write("selected_playlist_snapshot_id",res["snapshot_id"],"playlists");
+        } else if (res["status"] == httplib::Forbidden_403 || res["status"] == httplib::NotFound_404){
+            auto end = std::chrono::high_resolution_clock::now(); // to measure eta when err
+            std::cerr << "Cant access this playlist! Is it yours? \n";
+            return;
         }
         auto end = std::chrono::high_resolution_clock::now();
         auto d = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);

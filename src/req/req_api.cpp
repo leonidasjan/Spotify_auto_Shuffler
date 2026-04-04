@@ -56,22 +56,26 @@ namespace req_api {
                     response["status"] = httplib::BadRequest_400;
                     log_in_un_authenticated(j["State"]);
                     
-
                 break;
 
                 case httplib::Unauthorized_401:
+
                     std::cerr << "[Get] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
-                    get_refresh_token();
                     response["status"] = httplib::Unauthorized_401;
+                    if(j["AccessToken"].is_null()){
+                        log_in_un_authenticated(j["State"]);
+                    } else {
+                        get_refresh_token();
+                    }
 
                 break;
 
                 case httplib::Forbidden_403:
+
                     std::cerr << "[Get] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
-                    log_in_un_authenticated(j["State"]);
 
                 break;
 
@@ -169,25 +173,33 @@ namespace req_api {
                 break;
                 
                 case httplib::BadRequest_400:
+
                     std::cout << "[Get] Error: BadRequest_400\n";
                     std::cout << "[Get] " << html_res->body;
                     response["status"] = httplib::BadRequest_400;
                     log_in_un_authenticated(j["State"]);
+                          
                 break;
 
                 case httplib::Unauthorized_401:
+
                     std::cerr << "[Get] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
-                    get_refresh_token();
-                    std::cout << "get req?";
+                    if(j["AccessToken"].is_null()){
+                        log_in_un_authenticated(j["State"]);
+                    } else {
+                        get_refresh_token();
+                    }
+
                 break;
 
                 case httplib::Forbidden_403:
+
                     std::cerr << "[Get] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
-                    log_in_un_authenticated(j["State"]);
+
                 break;
 
                 case httplib::TooManyRequests_429:
@@ -288,25 +300,33 @@ namespace req_api {
                 break;
                 
                 case httplib::BadRequest_400:
+
                     std::cout << "[Post] Error: BadRequest_400\n";
-                    std::cout << "[Post] "<<  html_res->body;
+                    std::cout << "[Post] " << html_res->body;
                     response["status"] = httplib::BadRequest_400;
                     log_in_un_authenticated(j["State"]);
+                    
                 break;
 
                 case httplib::Unauthorized_401:
-                    std::cout << body_s;
+
                     std::cerr << "[Post] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
-                    get_refresh_token();
+                    if(j["AccessToken"].is_null()){
+                        log_in_un_authenticated(j["State"]);
+                    } else {
+                        get_refresh_token();
+                    }
+
                 break;
 
                 case httplib::Forbidden_403:
+
                     std::cerr << "[Post] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
-                    log_in_un_authenticated(j["State"]);
+
                 break;
 
                 case httplib::TooManyRequests_429:
@@ -394,24 +414,33 @@ namespace req_api {
                 break;
                 
                 case httplib::BadRequest_400:
+
                     std::cout << "[Put] Error: BadRequest_400\n";
-                    std::cout << html_res->body;
+                    std::cout << "[Put] " << html_res->body;
                     response["status"] = httplib::BadRequest_400;
                     log_in_un_authenticated(j["State"]);
+                    
                 break;
 
                 case httplib::Unauthorized_401:
+
                     std::cerr << "[Put] Error: Unauthorized_401, refreshing access token!" << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Unauthorized_401;
-                    get_refresh_token();
+                    if(j["AccessToken"].is_null()){
+                        log_in_un_authenticated(j["State"]);
+                    } else {
+                        get_refresh_token();
+                    }
+
                 break;
 
                 case httplib::Forbidden_403:
+
                     std::cerr << "[Put] Bad OAuth request (Probably not enough permisions). Unfortunately, re-authenticating the user won't help here." << std::endl;
                     std::cout << html_res -> body << '\n';
                     response["status"] = httplib::Forbidden_403;
-                    log_in_un_authenticated(j["State"]);
+
                 break;
 
                 case httplib::TooManyRequests_429:
