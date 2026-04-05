@@ -57,7 +57,6 @@ void shuffle(){
         if (res["status"] == httplib::OK_200){
             write("selected_playlist_snapshot_id",res["snapshot_id"],"playlists");
         } else if (res["status"] == httplib::Forbidden_403 || res["status"] == httplib::NotFound_404){
-            auto end = std::chrono::high_resolution_clock::now(); // to measure eta when err
             std::cerr << "Cant access this playlist! Is it yours? \n";
             return;
         }
