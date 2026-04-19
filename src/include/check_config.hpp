@@ -10,26 +10,31 @@ const char *getEnvironmentVariable(const char* varname);
 void check_config_folders();
 void make_json_file(std::string name="config.json");
 
-nlohmann::json read(const std::string name);
-///@{
 /**
- *  @brief  Write function to JSON
- *  @param  key 
- *  @param  pair
- *  @param  name Without ".json"
+ *  @brief  Read File to JSON
+ *  @param  name of the file without .json 
+ *  @return JSON obj
+ *
+ */
+nlohmann::json read(const std::string name);
+
+/**
+ *  @brief  Write string to JSON
+ *  @param  key string
+ *  @param  pair string
+ *  @param  name string - Without ".json"
  *  @return  Written File
  *
  */
-void write(const std::string key, const std::string pair, const std::string name);
-///@}
-///@{
+void write(const std::string key, const nlohmann::json& pair, std::string name);
+
 /**
- *  @brief  Write function to JSON
- *  @param  j Json object
- *  @param  name Without ".json"
+ *  @brief  Write json obj to JSON
+ *  @param  j nlohmann::json - Json object
+ *  @param  name string - Without ".json"
  *  @return Written File
  *
  */
-void write(nlohmann::json &j, std::string name);
-///@}
+void write(const nlohmann::json &j, std::string name);
+
 #endif

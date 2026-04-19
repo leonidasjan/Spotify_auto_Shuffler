@@ -27,7 +27,6 @@ int main(){
 
     using std::cout, std::string;
 
-    cout << "Welcome to Spotify Auto Shuffler. \n";
     check_config_folders();
 
     // Start HTML server with unique state for auth
@@ -35,6 +34,9 @@ int main(){
     auto j = read("auth");
     std::jthread serverThread(serverHTML);
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(25)); // wait for HTTP server to start
+
+    cout << "Welcome to Spotify Auto Shuffler. \n";
     
     // need to check for access token
 
@@ -55,7 +57,7 @@ int main(){
     }
 
     std::cout << "====================================\n";
-    std::cout << "\nHello " << Profile_Data.value("display_name","") << "!\n";
+    std::cout << "\nHello " << Profile_Data.value("display_name","") << "!\n\n";
     write(Profile_Data,"profile_data");
 
     // Request shuffle data from server

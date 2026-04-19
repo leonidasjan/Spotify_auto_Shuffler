@@ -18,8 +18,8 @@ void make_json_file(std::string name="config.json", std::filesystem::path envpat
 
 nlohmann::json read(const std::string name);
 
-void write(const std::string key, const std::string pair, const std::string name);
-
+void write(const std::string key, const nlohmann::json& pair, std::string name);
+void write(const nlohmann::json &j, std::string name);
 
 
 
@@ -144,7 +144,7 @@ nlohmann::json read( std::string name){
 };
 
 
-void write(const std::string key, const std::string pair, std::string name){
+void write(const std::string key, const nlohmann::json& pair, std::string name){
     using std::filesystem::path; using json = nlohmann::json;
     
     auto mainpath = get_main_path();
@@ -173,7 +173,8 @@ void write(const std::string key, const std::string pair, std::string name){
     }
 }
 
-void write(nlohmann::json &j, std::string name){
+
+void write(const nlohmann::json &j, std::string name){
     using std::filesystem::path; using json = nlohmann::json;
     
     auto mainpath = get_main_path();

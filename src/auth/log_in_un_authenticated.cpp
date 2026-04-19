@@ -17,38 +17,37 @@ void log_in_un_authenticated(std::string state){
 
     cout << '\n';
     cout << "====================================\n";
+    cout << "        FIRST TIME LOGIN\n";
+    cout << "====================================\n\n";
 
-    cout << "First of all, You need to log in to Your Spotify Account and create an app\n\n";
-
-    cout << "Opening up browser...\n\n";
-
+    cout << "[1] Opening Spotify Developer page...\n\n";
     ShellExecute(0, 0, dev_uri.c_str(), 0, 0 , SW_SHOW );
-    
-    cout << "Log in with your Spotify Account and accept the Terms of Service\n\n";
+
+    cout << "[2] Log in to your Spotify account\n";
+    cout << "    - Accept the Terms of Service\n\n";
+
+    cout << "[3] Create a new application:\n";
+    cout << "    - Click 'Create App'\n";
+    cout << "    - Fill in App Name and Description (anything you want)\n";
+    cout << "    - In Redirect URI paste:\n";
+    cout << "      http://127.0.0.1:54789/callback\n";
+    cout << "    - Click 'Save'\n\n";
 
     cout << "====================================\n";
+    cout << "        ENTER YOUR CREDENTIALS\n";
+    cout << "====================================\n\n";
 
-    cout << "Click Create app,\n\n";
+    while (ClientID == "None" || ClientSecret == "None"){
 
-    cout << "Fill App name and App description however You want \n\n";
+        cout << "[4] Paste your Client ID here:\n> ";
+        std::getline(std::cin, ClientID);
 
-    cout << "In redirect URI, copy and paste this: http://127.0.0.1:54789/callback" << "\n\n";
+        cout << "\n[5] Click 'View Client Secret' on the website\n";
+        cout << "    Paste your Client Secret here:\n> ";
+        std::getline(std::cin, ClientSecret);
 
-    cout << "Click Save\n";
-    cout << "====================================\n";
-        while (ClientID == "None" || ClientSecret == "None"){
+        cout << "\n[6] Authentication will now open in your browser...\n\n";
 
-        cout << "Okay, now copy the ==Client ID== and paste it in here: ";
-
-        std::getline(std::cin,ClientID);
-
-        cout << "\n\nClick 'View Secret Key' and \n";
-
-        cout << "\n\nCopy the ==Client Secret== and paste it in here: ";
-
-        std::getline(std::cin,ClientSecret);
-
-        cout << "\n\nDone! Now Authenticate in your browser.\n\n";
-        get_auth_code( ClientID, ClientSecret, state );
+        get_auth_code(ClientID, ClientSecret, state);
     }
 }

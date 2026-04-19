@@ -1,5 +1,6 @@
 #include <string>
 #include <map>
+#include <charconv>
 #include <nlohmann/json.hpp>
 
 #include "req_api.hpp"
@@ -9,6 +10,8 @@
 void Get_Current_Users_Playlists(){
     using std::string;
     int limit = 50, offset = 0;
+
+    std::cout << "Pick a playlist that you want to shuffle: \n\n";
 
     std::map<string,string> m ={
         {"1limit",std::to_string(limit)},
@@ -57,8 +60,11 @@ void Get_Playlists_Items(){
     std::string playlist_url = "None";
     std::string s_pick = "";
 
+    int pick;
     std::getline(std::cin, s_pick);
-    int pick = std::stoi(s_pick);
+    auto [ptr,ec] = std::from_chars(s_pick.data(),s_pick.data() + s_pick.size(), pick);
+    if (ec != std::errc{}) pick = 1;
+
     if (pick == 0){
         std::cout << "Cant pick " << pick << ", first playlist starts with 1 \n";
     } 
@@ -71,7 +77,7 @@ void Get_Playlists_Items(){
         write("selected_playlist_id",playlists["items"][pick]["id"], "playlists");
         write("selected_playlist_snapshot_id",playlists["items"][pick]["snapshot_id"], "playlists");
         write("selected_playlist_name",playlists["items"][pick]["name"], "playlists");
-        write("selected_playlist_total", playlists["items"][pick]["items"]["total"].dump() ,"playlists");
+        write("selected_playlist_total", playlists["items"][pick]["items"]["total"],"playlists");
     }
 
     else {
