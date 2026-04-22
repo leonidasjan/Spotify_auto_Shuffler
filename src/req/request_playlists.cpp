@@ -6,6 +6,7 @@
 #include "req_api.hpp"
 #include "encoder.hpp"
 #include "check_config.hpp"
+#include "autostart.hpp"
 
 void Get_Current_Users_Playlists(){
     using std::string;
@@ -49,12 +50,12 @@ void Get_Current_Users_Playlists(){
             std::cout << counter << ". " << x["name"] << '\n';
     };
 
-    std::cout << std::flush << "Pick a number between 1-" << counter << " : ";
 }
 
 void Get_Playlists_Items(){
     // we need playlist ID in order to get the items
     nlohmann::json playlists = read("playlists");
+    std::cout << std::flush << "Pick a number between 1-" << playlists["items"].size() << " (type 'a' for autostart settings): ";
     std::cin.clear();
 
     std::string playlist_url = "None";
@@ -62,6 +63,7 @@ void Get_Playlists_Items(){
 
     int pick;
     std::getline(std::cin, s_pick);
+    if(s_pick == "a"){ autostart_settings(); return;}
     auto [ptr,ec] = std::from_chars(s_pick.data(),s_pick.data() + s_pick.size(), pick);
     if (ec != std::errc{}) pick = 1;
 
@@ -71,13 +73,31 @@ void Get_Playlists_Items(){
 
     else if(pick <= playlists.value("total", 0)) {
         pick -= 1;
-        playlist_url = playlists["items"][pick]["items"]["href"];
+        try {
+            playlist_url = playlists["items"][pick]["items"]["href"];
+        }
+        catch(const nlohmann::json::exception &e) {
+            std::cerr << e.what() << '\n';
+            std::cout << "playlist_url = None\n==== \n Skipped fetching playlists items! \n==== \n";
+        return;
+        }
+        
         std::cout << "Playlist Name: " << playlists["items"][pick]["name"] << '\n';
         std::cout << "Total Songs in this playlist: " << playlists["items"][pick]["items"]["total"] << '\n';
+
+        playlists["single"].push_back({
+            {"id",pick},
+            {"selected_playlist_id",playlists["items"][pick]["id"]},
+            {"selected_playlist_snapshot_id",playlists["items"][pick]["snapshot_id"]},
+            {"selected_playlist_name",playlists["items"][pick]["name"]},
+            {"selected_playlist_total", playlists["items"][pick]["items"]["total"]}
+        });
+
         write("selected_playlist_id",playlists["items"][pick]["id"], "playlists");
         write("selected_playlist_snapshot_id",playlists["items"][pick]["snapshot_id"], "playlists");
         write("selected_playlist_name",playlists["items"][pick]["name"], "playlists");
         write("selected_playlist_total", playlists["items"][pick]["items"]["total"],"playlists");
+        write(playlists,"playlists");
     }
 
     else {
@@ -86,15 +106,9 @@ void Get_Playlists_Items(){
     }
 
     // getting items starts here
-    
-    if(playlist_url != "None"){
-        return;
-    };
 
     nlohmann::json playlist_items;
     nlohmann::json new_req = req_api::get(playlist_url+"?market=PL&limit=50");
-
-
 
     playlist_items["next"] = new_req["next"];
     playlist_items["status"] = new_req["status"];

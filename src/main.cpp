@@ -20,10 +20,18 @@
 #include "shuffle.hpp"
 
 
-int main(){
+int main(int argc, char* argv[]){
 
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
+
+    #ifdef _WIN32
+    #define CLEAR "cls"
+    #else
+        #define CLEAR "clear"
+    #endif
+
+std::system(CLEAR);
 
     using std::cout, std::string;
 
@@ -38,9 +46,18 @@ int main(){
 
     cout << "Welcome to Spotify Auto Shuffler. \n";
     
-    // need to check for access token
+    // check if the app has launched from autostart
+    bool isAutostart = false;
 
-    if (j.is_null() || j["ClientID"].is_null() || j["AccessToken"].is_null() || j["RefreshToken"].is_null()) {
+    for (int i = 0 ; i < argc; i++){
+        if (std::string(argv[i]) == "--autostart"){
+            isAutostart = true;
+        }
+    }
+
+    // need to check for auth
+
+    if (j.empty() || j.is_null() || j["ClientID"].is_null() || j["AccessToken"].is_null() || j["RefreshToken"].is_null()) {
         // user needs access token to continue, start auth proccess
         log_in_un_authenticated(j["State"]); 
     } else {
@@ -60,21 +77,36 @@ int main(){
     std::cout << "\nHello " << Profile_Data.value("display_name","") << "!\n\n";
     write(Profile_Data,"profile_data");
 
+    if(isAutostart){
+        std::vector<int> arr = j["autostart_playlists"];
+        for (auto x: arr){
+            shuffle(x);
+        }
+        std::cout << "[Main] Requesting: html_stop\n";
+        serverThread.request_stop();
+        serverHTMLstop();
+
+        return 0;
+    }
+
     // Request shuffle data from server
 
     Get_Current_Users_Playlists();
     Get_Playlists_Items();
 
     // Shuffle selected playlists
-
+    auto playlists = read("playlists");
     auto res = shuffle_choice();
     while (!res){
         Get_Current_Users_Playlists();
         Get_Playlists_Items();
+        playlists = read("playlists");
         res = shuffle_choice();
     };
     if (res == 1){
-        shuffle();
+        std::cout << playlists["single"][0]["id"];
+        int id = playlists["single"][0]["id"];
+        shuffle(id);
     }
     std::string pick = "Y";
     while (pick == "Y" || pick == "y" || pick == ""){
@@ -85,15 +117,19 @@ int main(){
             while (!res){
                 Get_Current_Users_Playlists();
                 Get_Playlists_Items();
+                playlists = read("playlists");
                 res = shuffle_choice();
             };
             if (res == 1){
-                shuffle();
+                int id = playlists["single"][0]["id"];
+                shuffle(id);
             }
         } else {
             break;
         }
     }
+    shuffle(1);
+    shuffle(3);
     std::cout << "[Main] Requesting: html_stop\n";
     serverThread.request_stop();
     serverHTMLstop();
