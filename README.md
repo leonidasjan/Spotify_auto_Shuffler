@@ -34,3 +34,17 @@ download zip file , extract it and run the .exe
 
 Spotify made a change and now it requies you to have spotify premium account to use this tool.
 Read more: https://developer.spotify.com/blog/2026-02-06-update-on-developer-access-and-platform-security
+
+## Autostart tutorial (Windows)
+
+Create a shortcut to main.exe file
+
+Right click on shortcut -> Properties and serach for [Target] box
+
+At the end of the path, add: --autostart (you can also add option to run this program minimized so it wont pop up)
+
+Click apply
+
+Now, WIN+R -> shell:startup and add the shortcut here
+
+Done!
