@@ -14,7 +14,7 @@ playlist-modify-private
 playlist-modify-public
 (you can read about them when authenticating)
 
- Compatibile with spotify API. (3/18/2026)
+ Compatibile with spotify API. (4/22/2026)
 
 ## Build
 
