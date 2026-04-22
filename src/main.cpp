@@ -128,8 +128,6 @@ std::system(CLEAR);
             break;
         }
     }
-    shuffle(1);
-    shuffle(3);
     std::cout << "[Main] Requesting: html_stop\n";
     serverThread.request_stop();
     serverHTMLstop();
