@@ -48,3 +48,5 @@ Click apply
 Now, WIN+R -> shell:startup and add the shortcut here
 
 Done!
+
+Every line of code was written without any help from AI
